@@ -1,0 +1,25 @@
+export const AMBIENT_SOUNDS = [
+  { id: 'rain', emoji: '🌧️', name: 'Rain', src: '/audio/rain.mp3' },
+  { id: 'ocean', emoji: '🌊', name: 'Ocean', src: '/audio/ocean.mp3' },
+  { id: 'cafe', emoji: '☕', name: 'Bustling Cafe', src: '/audio/bustling-cafe.mp3' },
+  { id: 'cabin', emoji: '✈️', name: 'Airplane Cabin', src: '/audio/airplane-cabin.mp3' },
+  { id: 'exam', emoji: '📝', name: 'Exam Hall', src: '/audio/exam-hall.mp3', plus: true },
+  { id: 'train', emoji: '🚆', name: 'Commuter Train', src: '/audio/commuter-train.mp3' },
+  { id: 'library', emoji: '📚', name: 'Japanese Library', src: '/audio/japanese-library.mp3', plus: true },
+  { id: 'nyc', emoji: '🌇', name: 'NYC Morning', src: '/audio/nyc-morning.mp3', plus: true },
+  { id: 'light-rain', emoji: '🌦️', name: 'Light Rain', src: '/audio/light-rain.mp3' },
+  { id: 'heavy-rain', emoji: '⛈️', name: 'Heavy Rain', src: '/audio/heavy-rain.mp3' },
+  { id: 'thunderstorm', emoji: '🌩️', name: 'Thunderstorm', src: '/audio/thunderstorm.mp3', plus: true },
+  { id: 'fireplace', emoji: '🔥', name: 'Fireplace', src: '/audio/fireplace.mp3' },
+  { id: 'campfire', emoji: '🏕️', name: 'Campfire', src: '/audio/campfire.mp3' },
+  { id: 'office', emoji: '💼', name: 'Office', src: '/audio/office.mp3' },
+  { id: 'wind', emoji: '🍃', name: 'Wind', src: '/audio/wind.mp3' },
+  { id: 'white-noise', emoji: '🔊', name: 'White Noise', src: '/audio/white-noise.mp3' },
+  { id: 'pink-noise', emoji: '🎚️', name: 'Pink Noise', src: '/audio/pink-noise.mp3', plus: true },
+  { id: 'brown-noise', emoji: '🎛️', name: 'Brown Noise', src: '/audio/brown-noise.mp3', plus: true },
+  { id: 'alpha', emoji: '🧠', name: 'Binaural: Alpha', src: '/audio/binaural-alpha.mp3', plus: true },
+  { id: 'theta', emoji: '🧠', name: 'Binaural: Theta', src: '/audio/binaural-theta.mp3', plus: true },
+  { id: 'delta', emoji: '🧠', name: 'Binaural: Delta', src: '/audio/binaural-delta.mp3', plus: true },
+]
+
+export const SOUND_FILTERS = ['All', 'Free', 'Plus']
