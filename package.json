@@ -8,7 +8,7 @@
     "server": "nodemon server/index.js",
     "client": "npm run dev --prefix Client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "npm install --prefix Client && npm run build --prefix Client",
+    "build": "npm install --prefix Client && npm run build --prefix Client && node scripts/copy-client-dist.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
