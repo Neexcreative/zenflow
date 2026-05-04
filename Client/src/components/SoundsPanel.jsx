@@ -141,7 +141,10 @@ export default function SoundsPanel() {
                 onClick={() => {
                   if (!selectedSoundId) {
                     const firstAvailable = filteredSounds.find((sound) => !sound.plus || isPremiumUser)
-                    if (!firstAvailable) return
+                    if (!firstAvailable) {
+                      showToast('No available sounds match the current filter.')
+                      return
+                    }
                     setSelectedSoundId(firstAvailable.id)
                     setAmbientPlaying(true)
                     return
@@ -172,6 +175,7 @@ export default function SoundsPanel() {
                 key={sound.id}
                 className={`sound-tile ${selectedSoundId === sound.id ? 'is-active' : ''} ${sound.plus ? 'is-plus' : ''}`}
                 onClick={() => handleSoundSelect(sound)}
+                title={sound.plus && !isPremiumUser ? 'Available for Plus users' : `Play ${sound.name}`}
               >
                 <span className="sound-emoji">{sound.emoji}</span>
                 <span className="sound-name">{sound.name}</span>

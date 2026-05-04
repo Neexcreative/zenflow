@@ -140,9 +140,7 @@ export default function WeatherWidget() {
       </div>
 
       <div className="weather-footer">
-        {state.status === 'fallback'
-          ? 'Demo weather mode'
-          : `Updated at ${formatTime(state.updatedAt)}`}
+        {state.status === 'fallback' ? 'Demo weather mode' : `Updated at ${formatTime(state.updatedAt)}`}
       </div>
     </WidgetCard>
   )

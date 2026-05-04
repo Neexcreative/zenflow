@@ -16,19 +16,14 @@ function clampPosition(x, y) {
 }
 
 export default function CoffeeMugTimer() {
-  const {
-    pomodoroMode,
-    pomodoroTime,
-    pomodoroDurations,
-    coffeeMugPosition,
-    setCoffeeMugPosition,
-  } = useZenflowStore()
+  const { pomodoroMode, pomodoroTime, pomodoroDurations, coffeeMugPosition, setCoffeeMugPosition } =
+    useZenflowStore()
   const [dragging, setDragging] = useState(false)
   const offsetRef = useRef({ x: 0, y: 0 })
 
   const totalSeconds = (pomodoroDurations[pomodoroMode] || 1) * 60
   const progress = Math.max(0, Math.min(1, pomodoroTime / totalSeconds))
-  const fillHeight = 8 + progress * 74
+  const fillHeight = 8 + progress * 82
 
   const position = useMemo(() => {
     if (coffeeMugPosition.x !== null && coffeeMugPosition.y !== null) {
@@ -74,6 +69,8 @@ export default function CoffeeMugTimer() {
   }, [dragging, setCoffeeMugPosition])
 
   const onPointerDown = (event) => {
+    event.preventDefault()
+    event.currentTarget.setPointerCapture?.(event.pointerId)
     setDragging(true)
     offsetRef.current = {
       x: event.clientX - position.x,

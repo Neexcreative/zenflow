@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Check, GripVertical, Plus, SquarePen, Trash2, X } from 'lucide-react'
 import useZenflowStore from '../store/useZenflowStore'
 
@@ -14,7 +15,9 @@ export default function NotesTasksPanel() {
     productivityTab,
     setProductivityTab,
     setNotesTasksOpen,
+    showToast,
   } = useZenflowStore()
+  const inputRefs = useRef({})
 
   return (
     <aside className="side-panel productivity-panel">
@@ -70,8 +73,9 @@ export default function NotesTasksPanel() {
                 <div key={task.id} className={`task-row ${task.completed ? 'is-complete' : ''}`}>
                   <button
                     className="task-icon-button drag-button"
-                    title="Reorder placeholder"
+                    title="Task reordering is coming next"
                     type="button"
+                    onClick={() => showToast('Task reordering is not connected yet.')}
                   >
                     <GripVertical size={14} />
                   </button>
@@ -86,12 +90,20 @@ export default function NotesTasksPanel() {
                   </button>
 
                   <input
+                    ref={(node) => {
+                      inputRefs.current[task.id] = node
+                    }}
                     value={task.text}
                     onChange={(event) => updateTask(task.id, event.target.value)}
                     placeholder="Type your priority"
                   />
 
-                  <button className="task-icon-button" type="button" title="Edit task">
+                  <button
+                    className="task-icon-button"
+                    type="button"
+                    title="Focus task field"
+                    onClick={() => inputRefs.current[task.id]?.focus()}
+                  >
                     <SquarePen size={14} />
                   </button>
 
@@ -109,14 +121,19 @@ export default function NotesTasksPanel() {
               {tasks.length < 3 &&
                 Array.from({ length: 3 - tasks.length }).map((_, index) => (
                   <div key={`empty-${index}`} className="task-row is-empty-slot">
-                    <button className="task-icon-button drag-button" type="button" title="Reorder placeholder">
+                    <button
+                      className="task-icon-button drag-button"
+                      type="button"
+                      title="Task reordering is coming next"
+                      onClick={() => showToast('Task reordering is not connected yet.')}
+                    >
                       <GripVertical size={14} />
                     </button>
                     <button className="task-icon-button" type="button" title="Empty slot">
                       <Check size={14} />
                     </button>
                     <input value="" readOnly placeholder="Type your priority" />
-                    <button className="task-icon-button" type="button" title="Edit task">
+                    <button className="task-icon-button" type="button" title="Focus task field">
                       <SquarePen size={14} />
                     </button>
                   </div>
@@ -124,9 +141,9 @@ export default function NotesTasksPanel() {
             </div>
 
             <div className="plus-promo">
-              <span className="plus-badge">⚡ PLUS</span>
+              <span className="plus-badge">PLUS</span>
               <p>
-                Want Task ETA Mode, infinite task slots, color tags, and emojis? Check it out →
+                Want Task ETA Mode, infinite task slots, color tags, and emojis? Check it out {'->'}
               </p>
             </div>
           </div>

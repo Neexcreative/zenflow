@@ -5,19 +5,33 @@ import useZenflowStore from '../store/useZenflowStore'
 import { isSupabaseConfigured, supabase } from '../lib/supabaseClient'
 
 const PROVIDERS = [
-  { id: 'facebook', label: 'Continue with Facebook', provider: 'facebook', icon: Facebook },
-  { id: 'google', label: 'Continue with Google', provider: 'google', icon: Mail },
-  { id: 'discord', label: 'Continue with Discord', provider: 'discord', icon: Gamepad2 },
+  {
+    id: 'facebook',
+    label: 'Continue with Facebook',
+    provider: 'facebook',
+    icon: Facebook,
+    enabled: false,
+    placeholderMessage: 'Facebook login is not connected yet.',
+  },
+  {
+    id: 'google',
+    label: 'Continue with Google',
+    provider: 'google',
+    icon: Mail,
+    enabled: true,
+  },
+  {
+    id: 'discord',
+    label: 'Continue with Discord',
+    provider: 'discord',
+    icon: Gamepad2,
+    enabled: false,
+    placeholderMessage: 'Discord login is not connected yet.',
+  },
 ]
 
 export default function LoginModal() {
-  const {
-    authUser,
-    authLoading,
-    setAuthUser,
-    setLoginOpen,
-    showToast,
-  } = useZenflowStore()
+  const { authUser, authLoading, setAuthUser, setLoginOpen, showToast } = useZenflowStore()
 
   useEffect(() => {
     const onKeyDown = (event) => {
@@ -30,7 +44,13 @@ export default function LoginModal() {
 
   const close = () => setLoginOpen(false)
 
-  const handleProviderClick = async (provider) => {
+  const handleProviderClick = async ({ provider, enabled, placeholderMessage }) => {
+    if (!enabled) {
+      // Connect this provider to Supabase OAuth here once it is configured.
+      showToast(placeholderMessage || `${provider} login is not connected yet.`)
+      return
+    }
+
     if (!isSupabaseConfigured || !supabase) {
       showToast('Supabase environment variables are missing. Check the console for details.')
       return
@@ -128,18 +148,25 @@ export default function LoginModal() {
         ) : (
           <>
             <div className="login-provider-list">
-              {PROVIDERS.map(({ id, label, provider, icon: Icon }) => (
-                <button key={id} className="login-provider-button" onClick={() => handleProviderClick(provider)}>
-                  <span className="login-provider-icon">
-                    <Icon size={16} />
-                  </span>
-                  <span>{label}</span>
-                </button>
-              ))}
+              {PROVIDERS.map((item) => {
+                const { id, label, icon: Icon } = item
+                return (
+                  <button
+                    key={id}
+                    className="login-provider-button"
+                    onClick={() => handleProviderClick(item)}
+                  >
+                    <span className="login-provider-icon">
+                      <Icon size={16} />
+                    </span>
+                    <span>{label}</span>
+                  </button>
+                )
+              })}
             </div>
 
             <p className="login-helper-copy">
-              If a provider is not configured in Supabase yet, the OAuth flow will return an error message instead of breaking the app.
+              Google uses Supabase OAuth. Any provider not configured yet will show a clear placeholder message instead of breaking the app.
             </p>
           </>
         )}

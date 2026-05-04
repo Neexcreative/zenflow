@@ -1,4 +1,16 @@
-import { FileCheck2, FileText, Flame, Fullscreen, Gift, Home, LogIn, Palette, Settings, Shrink, Timer } from 'lucide-react'
+import {
+  FileCheck2,
+  FileText,
+  Flame,
+  Fullscreen,
+  Gift,
+  Home,
+  LogIn,
+  Palette,
+  Settings,
+  Shrink,
+  Timer,
+} from 'lucide-react'
 import useZenflowStore from '../store/useZenflowStore'
 
 async function toggleFullscreen(setIsFullscreen, isFullscreen) {
@@ -28,10 +40,19 @@ export default function BottomNav() {
     setBackgroundSwitcherOpen,
     isFullscreen,
     setIsFullscreen,
+    authUser,
+    showToast,
   } = useZenflowStore()
 
   const items = [
-    { id: 'streak', label: '🔥 0', icon: Flame, onClick: () => {}, passive: true, staticLabel: true },
+    {
+      id: 'streak',
+      label: 'Streak',
+      icon: Flame,
+      onClick: () => showToast(`You have completed ${pomodoroSessions || 0} focus sessions.`),
+      passive: true,
+      staticLabel: true,
+    },
     { id: 'home', label: 'Home', icon: Home, onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
     { id: 'focus', label: 'Focus', icon: Timer, onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }), active: true },
     { id: 'share', label: 'Share', icon: Gift, onClick: () => setShareOpen(true) },
@@ -49,7 +70,7 @@ export default function BottomNav() {
       onClick: () => openProductivityPanel('tasks'),
       active: notesTasksOpen && productivityTab === 'tasks',
     },
-    { id: 'background', label: 'Background', icon: Palette, onClick: () => setBackgroundSwitcherOpen(true) },
+    { id: 'background', label: 'Change Background', icon: Palette, onClick: () => setBackgroundSwitcherOpen(true) },
     { id: 'settings', label: 'Settings', icon: Settings, onClick: () => setSettingsOpen(true) },
     {
       id: 'fullscreen',
@@ -58,7 +79,7 @@ export default function BottomNav() {
       onClick: () => toggleFullscreen(setIsFullscreen, isFullscreen),
       active: isFullscreen,
     },
-    { id: 'login', label: 'Login', icon: LogIn, onClick: () => setLoginOpen(true) },
+    { id: 'login', label: authUser ? 'Account' : 'Login', icon: LogIn, onClick: () => setLoginOpen(true) },
   ]
 
   return (
@@ -68,10 +89,10 @@ export default function BottomNav() {
           key={id}
           className={`bottom-nav-item ${active ? 'is-active' : ''} ${passive ? 'is-passive' : ''}`}
           onClick={onClick}
-          title={id === 'streak' ? `🔥 ${pomodoroSessions || 0}` : label}
+          title={id === 'streak' ? `Completed sessions: ${pomodoroSessions || 0}` : label}
         >
           <Icon size={16} />
-          <span>{staticLabel ? `🔥 ${pomodoroSessions || 0}` : label}</span>
+          <span>{staticLabel ? `${pomodoroSessions || 0}` : label}</span>
         </button>
       ))}
     </nav>

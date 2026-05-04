@@ -16,10 +16,14 @@ export default function AmbientAudioPlayer() {
     const onEnded = () => setAmbientPlaying(false)
     const onError = () => {
       if (!audio.src) return
-      if (!warnedSourcesRef.current.has(audio.src)) {
-        warnedSourcesRef.current.add(audio.src)
-        console.warn(`Ambient audio file is missing or failed to load: ${audio.src}`)
+      const source = audio.src
+      if (!warnedSourcesRef.current.has(source)) {
+        warnedSourcesRef.current.add(source)
+        console.warn(`Ambient audio file is missing or failed to load: ${source}`)
+        const filename = source.split('/').pop() || 'selected audio file'
+        showToast(`Missing audio file: ${filename}`)
       }
+      setAmbientPlaying(false)
     }
 
     audio.addEventListener('ended', onEnded)
@@ -31,7 +35,7 @@ export default function AmbientAudioPlayer() {
       audio.removeEventListener('error', onError)
       audioRef.current = null
     }
-  }, [setAmbientPlaying])
+  }, [setAmbientPlaying, showToast])
 
   useEffect(() => {
     if (!audioRef.current) return
@@ -47,6 +51,7 @@ export default function AmbientAudioPlayer() {
     if (!sound) {
       audio.pause()
       audio.currentTime = 0
+      audio.removeAttribute('src')
       return
     }
 
@@ -63,15 +68,16 @@ export default function AmbientAudioPlayer() {
     }
 
     if (!audio.src || !audio.src.endsWith(sound.src)) {
+      audio.pause()
       audio.src = sound.src
+      audio.currentTime = 0
       audio.load()
     }
 
-    audio
-      .play()
-      .catch(() => {
-        console.warn(`Ambient audio could not start automatically for ${sound.src}`)
-      })
+    audio.play().catch(() => {
+      console.warn(`Ambient audio could not start automatically for ${sound.src}`)
+      showToast('Press play again if your browser blocked audio autoplay.')
+    })
   }, [selectedSoundId, ambientPlaying, isPremiumUser, showToast, setAmbientPlaying])
 
   return null
