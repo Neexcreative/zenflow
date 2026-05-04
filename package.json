@@ -6,9 +6,9 @@
   "scripts": {
     "start": "node server/index.js",
     "server": "nodemon server/index.js",
-    "client": "cd Client && npm run dev",
+    "client": "npm run dev --prefix Client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "cd Client && npm run build",
+    "build": "npm install --prefix Client && npm run build --prefix Client",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
