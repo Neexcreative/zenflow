@@ -1,9 +1,15 @@
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
+const { createCheckoutSessionHandler } = require('./lib/createCheckoutSession')
+const { stripeWebhookHandler } = require('./lib/stripeWebhook')
 
 const app = express()
 const PORT = process.env.PORT || 5000
+
+app.post('/api/stripe-webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  return stripeWebhookHandler(req, res, req.body)
+})
 
 app.use(express.json())
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }))
@@ -35,11 +41,15 @@ app.get('/api/quotes', (req, res) => {
 app.post('/api/user/plan', (req, res) => {
   const { plan } = req.body
 
-  if (!['free', 'pro', 'premium'].includes(plan)) {
+  if (!['free', 'monthly', 'yearly'].includes(plan)) {
     return res.status(400).json({ error: 'Invalid plan' })
   }
 
   return res.json({ success: true, plan })
+})
+
+app.post('/api/create-checkout-session', (req, res) => {
+  return createCheckoutSessionHandler(req, res)
 })
 
 app.get('/api/weather/:city', async (req, res) => {

@@ -66,9 +66,11 @@ export default function App() {
     backgroundSwitcherOpen,
     accentColor,
     backgroundTheme,
+    showToast,
     setAuthLoading,
     setAuthUser,
     setIsFullscreen,
+    setUserPlan,
   } = useZenflowStore()
 
   useClickSound()
@@ -87,23 +89,66 @@ export default function App() {
   }, [setIsFullscreen])
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const checkoutResult = params.get('checkout')
+
+    if (!checkoutResult) return
+
+    if (checkoutResult === 'success') {
+      showToast('Payment successful. Your Plus access is being activated.')
+    }
+
+    if (checkoutResult === 'cancelled') {
+      showToast('Checkout cancelled.')
+    }
+
+    params.delete('checkout')
+    const nextQuery = params.toString()
+    const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`
+    window.history.replaceState({}, '', nextUrl)
+  }, [showToast])
+
+  useEffect(() => {
     if (!supabase) {
       setAuthLoading(false)
       return undefined
     }
 
     let mounted = true
+    const syncUserProfile = async (user) => {
+      if (!user || !supabase) {
+        setUserPlan('free')
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('is_premium, plan')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (error) {
+        console.warn('Supabase profile sync failed:', error.message)
+        return
+      }
+
+      if (!mounted) return
+      setUserPlan(data?.is_premium ? data.plan || 'monthly' : 'free')
+    }
 
     supabase.auth
       .getSession()
-      .then(({ data, error }) => {
+      .then(async ({ data, error }) => {
         if (!mounted) return
 
         if (error) {
           console.warn('Supabase session check failed:', error.message)
           setAuthUser(null)
+          setUserPlan('free')
         } else {
-          setAuthUser(data.session?.user ?? null)
+          const user = data.session?.user ?? null
+          setAuthUser(user)
+          await syncUserProfile(user)
         }
 
         setAuthLoading(false)
@@ -112,13 +157,16 @@ export default function App() {
         if (!mounted) return
         console.warn('Supabase session check failed:', error.message)
         setAuthUser(null)
+        setUserPlan('free')
         setAuthLoading(false)
       })
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setAuthUser(session?.user ?? null)
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      const user = session?.user ?? null
+      setAuthUser(user)
+      await syncUserProfile(user)
       setAuthLoading(false)
     })
 
@@ -126,7 +174,7 @@ export default function App() {
       mounted = false
       subscription.unsubscribe()
     }
-  }, [setAuthLoading, setAuthUser])
+  }, [setAuthLoading, setAuthUser, setUserPlan])
 
   const activeSet = new Set(activeWidgets)
   const leftWidgets = LEFT_COLUMN_WIDGETS.filter((id) => activeSet.has(id))

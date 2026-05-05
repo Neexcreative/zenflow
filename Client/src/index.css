@@ -2981,6 +2981,16 @@ body.cursor-clicking .cursor-dot {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.upgrade-plan-grid-compact {
+  align-items: stretch;
+}
+
+.billing-toggle-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
 .upgrade-card {
   gap: 16px;
   min-height: 100%;
