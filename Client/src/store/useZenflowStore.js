@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { DEFAULT_BACKGROUND_ID } from '../data/backgrounds'
 
 function extractVideoId(url) {
   if (!url) return ''
@@ -49,8 +50,10 @@ const useZenflowStore = create(
       setBackgroundVisible: (value) => set({ backgroundVisible: value }),
 
       backgroundTheme: 'default',
+      selectedBackgroundId: DEFAULT_BACKGROUND_ID,
       backgroundSwitcherOpen: false,
       setBackgroundTheme: (value) => set({ backgroundTheme: value }),
+      setSelectedBackgroundId: (value) => set({ selectedBackgroundId: value }),
       setBackgroundSwitcherOpen: (value) => set({ backgroundSwitcherOpen: value }),
 
       activeWidgets: ['clock', 'pomodoro', 'vinyl', 'notes'],
@@ -253,6 +256,7 @@ const useZenflowStore = create(
         videoId: state.videoId,
         backgroundVisible: state.backgroundVisible,
         backgroundTheme: state.backgroundTheme,
+        selectedBackgroundId: state.selectedBackgroundId,
         selectedSoundId: state.selectedSoundId,
         ambientPlaying: state.ambientPlaying,
         ambientVolume: state.ambientVolume,

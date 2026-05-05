@@ -30,7 +30,7 @@ export default function CoffeeMugTimer() {
       return coffeeMugPosition
     }
 
-    return clampPosition(window.innerWidth - 132, 96)
+    return clampPosition(window.innerWidth - 150, 132)
   }, [coffeeMugPosition])
 
   useEffect(() => {
@@ -87,6 +87,9 @@ export default function CoffeeMugTimer() {
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
     >
       <div className="coffee-pixel-wrap">
+        <div className="coffee-widget-caption">
+          <span>Focus companion</span>
+        </div>
         <div className="coffee-mug">
           <div className="coffee-fill" style={{ height: `${fillHeight}%` }} />
           <div className="coffee-steam steam-one" />

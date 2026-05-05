@@ -1,25 +1,26 @@
-Place ambient audio files in this folder using these filenames:
+Zenflow Audio Assets
 
-- `rain.mp3`
-- `ocean.mp3`
-- `bustling-cafe.mp3`
-- `airplane-cabin.mp3`
-- `exam-hall.mp3`
-- `commuter-train.mp3`
-- `japanese-library.mp3`
-- `nyc-morning.mp3`
-- `light-rain.mp3`
-- `heavy-rain.mp3`
-- `thunderstorm.mp3`
-- `fireplace.mp3`
-- `campfire.mp3`
-- `office.mp3`
-- `wind.mp3`
-- `white-noise.mp3`
-- `pink-noise.mp3`
-- `brown-noise.mp3`
-- `binaural-alpha.mp3`
-- `binaural-theta.mp3`
-- `binaural-delta.mp3`
+Recommended formats:
+- `.mp3` for broad browser support
+- `.ogg` can be added later if you want alternate encoded versions
 
-If a file is missing, the app will keep running and log a console warning.
+Recommended max file sizes:
+- Ambient loop: 1.5 MB preferred, 4 MB hard cap
+- Keep loops short and seamless for better loading and memory use
+
+Naming convention:
+- Use lowercase kebab-case only
+- Examples:
+  - `rain.mp3`
+  - `ocean.mp3`
+  - `bustling-cafe.mp3`
+  - `white-noise.mp3`
+
+How to replace placeholders later:
+1. Drop the audio file into this folder.
+2. Update or add the metadata entry in `Client/src/data/sounds.js`.
+3. Keep the `id` and `assetUrl` aligned with the filename.
+4. Set `premium` and `loop` based on product rules.
+
+Future migration note:
+- The sound gallery data is already prepared so `assetUrl` can later point to Supabase Storage or a CDN URL instead of this local folder.

@@ -11,7 +11,7 @@ const QUOTES = [
   { text: 'The ability to perform deep work is becoming increasingly rare.', author: 'Cal Newport' },
   { text: 'Flow is being completely involved in an activity for its own sake.', author: 'Mihaly Csikszentmihalyi' },
   { text: 'Simplicity is the ultimate sophistication.', author: 'Leonardo da Vinci' },
-  { text: "Schedule your priorities before the world schedules them for you.", author: 'Stephen Covey' },
+  { text: 'Schedule your priorities before the world schedules them for you.', author: 'Stephen Covey' },
   { text: 'Energy, not time, is the fundamental currency of high performance.', author: 'Jim Loehr' },
   { text: "It's not about having time. It's about making time.", author: 'Unknown' },
   { text: 'Discipline is choosing between what you want now and what you want most.', author: 'Abraham Lincoln' },
@@ -49,7 +49,7 @@ export default function QuoteWidget() {
     <WidgetCard
       title="Quote"
       headerRight={
-        <button onClick={next} className="btn-ghost quote-refresh" title="Next quote">
+        <button onClick={next} className="icon-button quote-refresh" title="Next quote">
           <RefreshCw size={14} />
         </button>
       }
@@ -65,7 +65,7 @@ export default function QuoteWidget() {
             transition={{ duration: 0.4 }}
           >
             <p className="quote-text">{QUOTES[index].text}</p>
-            <p className="quote-author">— {QUOTES[index].author}</p>
+            <p className="quote-author">- {QUOTES[index].author}</p>
           </motion.div>
         </AnimatePresence>
       </div>

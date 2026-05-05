@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Music2, Pause, Play, X } from 'lucide-react'
+import { Lock, Music2, Pause, Play, X } from 'lucide-react'
 import useZenflowStore from '../store/useZenflowStore'
 import { AMBIENT_SOUNDS, SOUND_FILTERS } from '../data/sounds'
 
@@ -40,13 +40,14 @@ export default function SoundsPanel() {
     setSoundsOpen,
     isPremiumUser,
     showToast,
+    setUpgradeOpen,
   } = useZenflowStore()
   const [feedback, setFeedback] = useState('')
 
   const filteredSounds = useMemo(() => {
     if (soundFilter === 'All') return AMBIENT_SOUNDS
-    if (soundFilter === 'Free') return AMBIENT_SOUNDS.filter((item) => !item.plus)
-    return AMBIENT_SOUNDS.filter((item) => item.plus)
+    if (soundFilter === 'Free') return AMBIENT_SOUNDS.filter((item) => !item.premium)
+    return AMBIENT_SOUNDS.filter((item) => item.premium)
   }, [soundFilter])
 
   const handleLoad = () => {
@@ -77,13 +78,12 @@ export default function SoundsPanel() {
   }
 
   const handleSpotifyConnect = () => {
-    // Add Spotify OAuth or player setup here when integration is available.
     showToast('Spotify integration is not connected yet.')
   }
 
   const handleSoundSelect = (sound) => {
-    if (sound.plus && !isPremiumUser) {
-      showToast('This sound is available for Plus users.')
+    if (sound.premium && !isPremiumUser) {
+      setUpgradeOpen(true)
       return
     }
 
@@ -97,15 +97,17 @@ export default function SoundsPanel() {
   }
 
   const playButtonLabel = ambientPlaying ? 'Pause' : 'Play'
+  const selectedSound = filteredSounds.find((item) => item.id === selectedSoundId)
 
   return (
     <aside className="side-panel sounds-panel">
       <div className="panel-head">
         <div>
-          <h3>Ambient Audio</h3>
-          <p>Blend calm textures, playlists, and your own music sources.</p>
+          <span className="eyebrow-label">Ambient audio</span>
+          <h3>Sound Gallery</h3>
+          <p>Metadata-driven local sounds now, with the same structure ready for future storage or CDN URLs.</p>
         </div>
-        <button className="btn-ghost" onClick={() => setSoundsOpen(false)}>
+        <button className="icon-button" onClick={() => setSoundsOpen(false)} aria-label="Close sounds panel">
           <X size={16} />
         </button>
       </div>
@@ -114,7 +116,7 @@ export default function SoundsPanel() {
         {[
           { id: 'sounds', label: 'Sounds' },
           { id: 'music', label: 'My Music' },
-          { id: 'library', label: 'Playlist Library' },
+          { id: 'library', label: 'Library' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -140,7 +142,7 @@ export default function SoundsPanel() {
                 className={`secondary-pill ${ambientPlaying ? 'is-playing' : ''}`}
                 onClick={() => {
                   if (!selectedSoundId) {
-                    const firstAvailable = filteredSounds.find((sound) => !sound.plus || isPremiumUser)
+                    const firstAvailable = filteredSounds.find((sound) => !sound.premium || isPremiumUser)
                     if (!firstAvailable) {
                       showToast('No available sounds match the current filter.')
                       return
@@ -169,17 +171,36 @@ export default function SoundsPanel() {
             </div>
           </div>
 
+          {selectedSound ? (
+            <div className="selected-sound-summary">
+              <strong>{selectedSound.title}</strong>
+              <p>
+                {selectedSound.category} · {selectedSound.mood}
+              </p>
+            </div>
+          ) : null}
+
           <div className="sound-grid">
             {filteredSounds.map((sound) => (
               <button
                 key={sound.id}
-                className={`sound-tile ${selectedSoundId === sound.id ? 'is-active' : ''} ${sound.plus ? 'is-plus' : ''}`}
+                className={`sound-tile ${selectedSoundId === sound.id ? 'is-active' : ''} ${sound.premium ? 'is-plus' : ''}`}
                 onClick={() => handleSoundSelect(sound)}
-                title={sound.plus && !isPremiumUser ? 'Available for Plus users' : `Play ${sound.name}`}
+                title={sound.premium && !isPremiumUser ? 'Available for Plus users' : `Play ${sound.title}`}
               >
-                <span className="sound-emoji">{sound.emoji}</span>
-                <span className="sound-name">{sound.name}</span>
-                {sound.plus && <span className="mini-plus-badge">PLUS</span>}
+                <div className="sound-tile-top">
+                  <span className="sound-emoji">{sound.icon || sound.category}</span>
+                  {sound.premium ? (
+                    <span className="sound-lock-pill">
+                      <Lock size={12} />
+                      <span>Plus</span>
+                    </span>
+                  ) : null}
+                </div>
+                <span className="sound-name">{sound.title}</span>
+                <span className="sound-mood-copy">
+                  {sound.category} · {sound.mood}
+                </span>
               </button>
             ))}
           </div>
@@ -200,11 +221,8 @@ export default function SoundsPanel() {
           </div>
 
           <div className="music-copy">
-            <h4>Custom Playlists</h4>
-            <p>
-              Add your favorite playlists from Spotify, YouTube, Apple Music, SoundCloud, or
-              Amazon Music. Store up to 5 to favorites.
-            </p>
+            <h4>Custom playlists</h4>
+            <p>Add Spotify, YouTube, Apple Music, SoundCloud, or Amazon Music links and keep up to 5 favorites.</p>
           </div>
 
           <input
@@ -222,6 +240,12 @@ export default function SoundsPanel() {
               Save to Favorites
             </button>
           </div>
+
+          {!customMusicUrl ? (
+            <div className="empty-state-card">
+              <p>Paste a playlist or video link to create your own listening shortcut.</p>
+            </div>
+          ) : null}
 
           {customMusicUrl && isSpotifyUrl(customMusicUrl) && (
             <div className="spotify-preview-shell">
@@ -248,7 +272,7 @@ export default function SoundsPanel() {
       {soundsTab === 'library' && (
         <div className="panel-section">
           <div className="music-copy">
-            <h4>Playlist Library</h4>
+            <h4>Playlist library</h4>
             <p>Your saved favorites live here so you can relaunch them quickly.</p>
           </div>
 

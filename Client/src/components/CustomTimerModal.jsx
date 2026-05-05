@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { X } from 'lucide-react'
+import { useState } from 'react'
 import useZenflowStore from '../store/useZenflowStore'
+import ModalShell from './ModalShell'
 
 export default function CustomTimerModal() {
   const { pomodoroDurations, pomodoroRounds, applyCustomTimer, setCustomTimerOpen } = useZenflowStore()
@@ -12,15 +11,6 @@ export default function CustomTimerModal() {
     rounds: pomodoroRounds,
   })
 
-  useEffect(() => {
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') setCustomTimerOpen(false)
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [setCustomTimerOpen])
-
   const close = () => setCustomTimerOpen(false)
 
   const handleSubmit = (event) => {
@@ -30,32 +20,23 @@ export default function CustomTimerModal() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="overlay-modal"
-      onClick={close}
-    >
-      <motion.form
-        initial={{ opacity: 0, scale: 0.96, y: 18 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 18 }}
-        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        className="feature-modal-card"
-        onClick={(event) => event.stopPropagation()}
-        onSubmit={handleSubmit}
-      >
-        <div className="modal-head">
-          <div>
-            <h2>Custom Timer</h2>
-            <p>Fine-tune your focus rhythm and save it instantly.</p>
-          </div>
-          <button type="button" onClick={close} className="btn-ghost">
-            <X size={16} />
+    <ModalShell
+      title="Custom Timer"
+      description="Fine-tune your focus rhythm and save it instantly."
+      onClose={close}
+      className="feature-modal-card"
+      footer={
+        <div className="modal-actions">
+          <button type="button" className="secondary-pill" onClick={close}>
+            Cancel
+          </button>
+          <button type="submit" form="custom-timer-form" className="primary-pill">
+            Save Custom Timer
           </button>
         </div>
-
+      }
+    >
+      <form id="custom-timer-form" onSubmit={handleSubmit}>
         <div className="settings-grid-2">
           {[
             { key: 'focus', label: 'Focus time', suffix: 'minutes' },
@@ -81,18 +62,9 @@ export default function CustomTimerModal() {
                 <small>{suffix}</small>
               </div>
             </label>
-          ))}
+            ))}
         </div>
-
-        <div className="modal-actions">
-          <button type="button" className="secondary-pill" onClick={close}>
-            Cancel
-          </button>
-          <button type="submit" className="primary-pill">
-            Save Custom Timer
-          </button>
-        </div>
-      </motion.form>
-    </motion.div>
+      </form>
+    </ModalShell>
   )
 }

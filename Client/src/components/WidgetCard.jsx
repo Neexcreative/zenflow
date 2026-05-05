@@ -1,6 +1,6 @@
-export default function WidgetCard({ title, headerRight, children, className = '' }) {
+export default function WidgetCard({ title, headerRight, children, className = '', accent = false }) {
   return (
-    <section className={`widget-card ${className}`.trim()}>
+    <section className={`widget-card ${accent ? 'widget-card-accent' : ''} ${className}`.trim()}>
       <div className="widget-card-header">
         <span className="widget-card-title">{title}</span>
         {headerRight}

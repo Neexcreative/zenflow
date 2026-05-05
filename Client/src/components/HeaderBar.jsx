@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Eye, EyeOff, LogIn, Music2, SlidersHorizontal, UserRound, Volume2 } from 'lucide-react'
+import {
+  Eye,
+  EyeOff,
+  LogIn,
+  Music2,
+  SlidersHorizontal,
+  Sparkles,
+  UserRound,
+  Volume2,
+} from 'lucide-react'
 import useZenflowStore from '../store/useZenflowStore'
 
 export default function HeaderBar() {
@@ -15,6 +24,7 @@ export default function HeaderBar() {
     setLoginOpen,
     setBackgroundVisible,
     setSoundsOpen,
+    setUpgradeOpen,
   } = useZenflowStore()
   const [value, setValue] = useState(currentVideoUrl)
 
@@ -38,10 +48,22 @@ export default function HeaderBar() {
 
   return (
     <header className="top-header">
+      <div className="header-brand">
+        <div className="header-brand-mark">Z</div>
+        <div className="header-brand-copy">
+          <strong>Zenflow</strong>
+          <span>Calm focus dashboard</span>
+        </div>
+      </div>
+
       <div className="header-utility-row">
         <button className="header-chip" onClick={() => setCustomTimerOpen(true)}>
           <SlidersHorizontal size={14} />
           <span>Custom Timer</span>
+        </button>
+        <button className="header-chip subtle-highlight" onClick={() => setUpgradeOpen(true)}>
+          <Sparkles size={14} />
+          <span>Upgrade</span>
         </button>
       </div>
 
@@ -53,7 +75,7 @@ export default function HeaderBar() {
             onChange={(event) => setValue(event.target.value)}
             placeholder="Paste a YouTube link to set the mood..."
           />
-          {videoId && (
+          {videoId ? (
             <button
               type="button"
               className="header-icon-button"
@@ -62,7 +84,7 @@ export default function HeaderBar() {
             >
               {backgroundVisible ? <Eye size={14} /> : <EyeOff size={14} />}
             </button>
-          )}
+          ) : null}
           {isPlaying && <span className="playing-indicator" />}
         </div>
       </form>

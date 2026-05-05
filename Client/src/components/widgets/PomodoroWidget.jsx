@@ -5,9 +5,9 @@ import useZenflowStore from '../../store/useZenflowStore'
 import WidgetCard from '../WidgetCard'
 
 const MODES = [
-  { key: 'focus', label: 'Focus', accent: 'var(--accent)' },
-  { key: 'shortBreak', label: 'Short Break', accent: 'var(--accent-teal)' },
-  { key: 'longBreak', label: 'Long Break', accent: 'var(--accent-teal)' },
+  { key: 'focus', label: 'Focus', accentClass: 'is-focus' },
+  { key: 'shortBreak', label: 'Short Break', accentClass: 'is-break' },
+  { key: 'longBreak', label: 'Long Break', accentClass: 'is-break' },
 ]
 
 export default function PomodoroWidget() {
@@ -44,6 +44,8 @@ export default function PomodoroWidget() {
   const minutes = Math.floor(pomodoroTime / 60)
   const seconds = pomodoroTime % 60
   const circumference = 2 * Math.PI * 52
+  const completedRounds = pomodoroSessions % pomodoroRounds
+  const currentMode = MODES.find((mode) => mode.key === pomodoroMode)
 
   const skip = () => {
     const currentIndex = MODES.findIndex((mode) => mode.key === pomodoroMode)
@@ -53,22 +55,44 @@ export default function PomodoroWidget() {
   return (
     <WidgetCard
       title="Pomodoro"
+      className="pomodoro-card"
+      accent
       headerRight={
         <div className="pomodoro-header-meta">
-          {Array.from({ length: pomodoroRounds }).map((_, index) => (
-            <span
-              key={index}
-              className={`pomodoro-session-dot ${index < pomodoroSessions % pomodoroRounds ? 'is-complete' : ''}`}
-            />
-          ))}
+          <div className="pomodoro-session-group">
+            {Array.from({ length: pomodoroRounds }).map((_, index) => (
+              <span
+                key={index}
+                className={`pomodoro-session-dot ${index < completedRounds ? 'is-complete' : ''}`}
+              />
+            ))}
+          </div>
+          <span className="tiny-status-pill">{pomodoroRunning ? 'In session' : 'Ready'}</span>
         </div>
       }
     >
       <motion.div
         className="pomodoro-shell"
-        animate={pomodoroRunning ? { opacity: [1, 0.85, 1] } : { opacity: 1 }}
+        animate={pomodoroRunning ? { opacity: [1, 0.9, 1] } : { opacity: 1 }}
         transition={{ duration: 3, repeat: pomodoroRunning ? Infinity : 0, ease: 'easeInOut' }}
       >
+        <div className="pomodoro-hero-copy">
+          <div>
+            <h3>{pomodoroMode === 'focus' ? 'Protected focus time' : 'Intentional recovery'}</h3>
+            <p>
+              {pomodoroMode === 'focus'
+                ? 'Keep the room quiet and move one meaningful task forward.'
+                : pomodoroMode === 'shortBreak'
+                  ? 'Step back for a quick reset before the next round.'
+                  : 'Take a longer pause and recharge your attention.'}
+            </p>
+          </div>
+          <div className="pomodoro-summary">
+            <span>Session {completedRounds + 1}</span>
+            <strong>{pomodoroDurations[pomodoroMode]} min</strong>
+          </div>
+        </div>
+
         <div className="pomodoro-pills">
           {MODES.map((mode) => {
             const active = pomodoroMode === mode.key
@@ -76,18 +100,7 @@ export default function PomodoroWidget() {
               <button
                 key={mode.key}
                 onClick={() => setPomodoroMode(mode.key)}
-                className={`pomodoro-pill ${active ? 'is-active' : ''}`}
-                style={
-                  active
-                    ? {
-                        color: mode.accent,
-                        borderColor:
-                          mode.key === 'focus' ? 'rgba(108,99,255,0.5)' : 'rgba(0,212,170,0.4)',
-                        background:
-                          mode.key === 'focus' ? 'rgba(108,99,255,0.2)' : 'rgba(0,212,170,0.15)',
-                      }
-                    : undefined
-                }
+                className={`pomodoro-pill ${mode.accentClass} ${active ? 'is-active' : ''}`}
               >
                 {mode.label}
               </button>
@@ -110,14 +123,14 @@ export default function PomodoroWidget() {
                 </feMerge>
               </filter>
             </defs>
-            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="3" />
+            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="4" />
             <circle
               cx="60"
               cy="60"
               r="52"
               fill="none"
               stroke="url(#pomGradient)"
-              strokeWidth="3"
+              strokeWidth="5"
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={circumference - progress * circumference}
@@ -127,6 +140,7 @@ export default function PomodoroWidget() {
           </svg>
 
           <div className="pomodoro-dial-center">
+            <span className={`pomodoro-mode-badge ${currentMode?.accentClass || ''}`}>{currentMode?.label}</span>
             <div className="pomodoro-time">
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
@@ -141,7 +155,7 @@ export default function PomodoroWidget() {
         </div>
 
         <div className="pomodoro-controls">
-          <button onClick={resetPomodoro} className="btn-ghost" title="Reset timer">
+          <button onClick={resetPomodoro} className="icon-button" title="Reset timer">
             <RotateCcw size={16} />
           </button>
 
@@ -151,9 +165,10 @@ export default function PomodoroWidget() {
             title={pomodoroRunning ? 'Pause timer' : 'Start timer'}
           >
             {pomodoroRunning ? <Pause size={18} /> : <Play size={18} style={{ marginLeft: 2 }} />}
+            <span>{pomodoroRunning ? 'Pause' : 'Start'}</span>
           </button>
 
-          <button onClick={skip} className="btn-ghost" title="Skip mode">
+          <button onClick={skip} className="icon-button" title="Skip mode">
             <SkipForward size={16} />
           </button>
         </div>

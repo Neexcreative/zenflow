@@ -23,10 +23,11 @@ export default function NotesTasksPanel() {
     <aside className="side-panel productivity-panel">
       <div className="panel-head">
         <div>
-          <h3>Productivity Desk</h3>
-          <p>Capture ideas and keep your next steps close.</p>
+          <span className="eyebrow-label">Productivity desk</span>
+          <h3>Notes and tasks</h3>
+          <p>Keep ideas, next actions, and momentum close to the timer.</p>
         </div>
-        <button className="btn-ghost" onClick={() => setNotesTasksOpen(false)}>
+        <button className="icon-button" onClick={() => setNotesTasksOpen(false)} aria-label="Close productivity panel">
           <X size={16} />
         </button>
       </div>
@@ -45,23 +46,38 @@ export default function NotesTasksPanel() {
 
       {productivityTab === 'notes' ? (
         <div className="panel-section">
-          <textarea
-            className="panel-notes"
-            value={notes}
-            onChange={(event) => setNotes(event.target.value)}
-            placeholder="Write your notes here..."
-          />
-          <div className="panel-row-end">
-            <button className="secondary-pill" onClick={clearNotes}>
-              Clear Notes
-            </button>
+          <div className="desk-note-card">
+            <div className="desk-card-head">
+              <div>
+                <h4>Session notes</h4>
+                <p>Capture thoughts, blockers, and ideas while you stay in flow.</p>
+              </div>
+              {notes ? <span className="tiny-status-pill">Saved</span> : null}
+            </div>
+
+            <textarea
+              className="panel-notes"
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+              placeholder="Write your notes here..."
+            />
+
+            <div className="panel-row-between">
+              <span className="subtle-meta">{notes.length} characters</span>
+              <button className="secondary-pill" onClick={clearNotes}>
+                Clear Notes
+              </button>
+            </div>
           </div>
         </div>
       ) : (
         <div className="panel-section">
           <div className="tasks-card">
             <div className="tasks-card-head">
-              <h4>Tasks</h4>
+              <div>
+                <h4>Tasks</h4>
+                <p>Turn the next few priorities into something concrete.</p>
+              </div>
               <button className="primary-pill compact-pill" onClick={() => addTask('')}>
                 <Plus size={14} />
                 <span>Add Task</span>
@@ -141,10 +157,8 @@ export default function NotesTasksPanel() {
             </div>
 
             <div className="plus-promo">
-              <span className="plus-badge">PLUS</span>
-              <p>
-                Want Task ETA Mode, infinite task slots, color tags, and emojis? Check it out {'->'}
-              </p>
+              <span className="plus-badge">Plus preview</span>
+              <p>Infinite tasks, smarter prioritization, and richer organization are planned next.</p>
             </div>
           </div>
         </div>

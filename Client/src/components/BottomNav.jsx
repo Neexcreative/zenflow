@@ -1,16 +1,4 @@
-import {
-  FileCheck2,
-  FileText,
-  Flame,
-  Fullscreen,
-  Gift,
-  Home,
-  LogIn,
-  Palette,
-  Settings,
-  Shrink,
-  Timer,
-} from 'lucide-react'
+import { FileCheck2, FileText, Flame, Fullscreen, Gift, Palette, Shrink } from 'lucide-react'
 import useZenflowStore from '../store/useZenflowStore'
 
 async function toggleFullscreen(setIsFullscreen, isFullscreen) {
@@ -35,12 +23,9 @@ export default function BottomNav() {
     notesTasksOpen,
     productivityTab,
     openProductivityPanel,
-    setSettingsOpen,
-    setLoginOpen,
     setBackgroundSwitcherOpen,
     isFullscreen,
     setIsFullscreen,
-    authUser,
     showToast,
   } = useZenflowStore()
 
@@ -48,51 +33,62 @@ export default function BottomNav() {
     {
       id: 'streak',
       label: 'Streak',
+      shortLabel: `${pomodoroSessions || 0}`,
       icon: Flame,
       onClick: () => showToast(`You have completed ${pomodoroSessions || 0} focus sessions.`),
       passive: true,
-      staticLabel: true,
     },
-    { id: 'home', label: 'Home', icon: Home, onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
-    { id: 'focus', label: 'Focus', icon: Timer, onClick: () => window.scrollTo({ top: 0, behavior: 'smooth' }), active: true },
-    { id: 'share', label: 'Share', icon: Gift, onClick: () => setShareOpen(true) },
     {
       id: 'notes',
-      label: 'Notes',
+      label: 'Notes Desk',
+      shortLabel: 'Notes',
       icon: FileText,
       onClick: () => openProductivityPanel('notes'),
       active: notesTasksOpen && productivityTab === 'notes',
     },
     {
       id: 'tasks',
-      label: 'Tasks',
+      label: 'Tasks Desk',
+      shortLabel: 'Tasks',
       icon: FileCheck2,
       onClick: () => openProductivityPanel('tasks'),
       active: notesTasksOpen && productivityTab === 'tasks',
     },
-    { id: 'background', label: 'Change Background', icon: Palette, onClick: () => setBackgroundSwitcherOpen(true) },
-    { id: 'settings', label: 'Settings', icon: Settings, onClick: () => setSettingsOpen(true) },
+    {
+      id: 'background',
+      label: 'Background',
+      shortLabel: 'Background',
+      icon: Palette,
+      onClick: () => setBackgroundSwitcherOpen(true),
+    },
+    {
+      id: 'share',
+      label: 'Share',
+      shortLabel: 'Share',
+      icon: Gift,
+      onClick: () => setShareOpen(true),
+    },
     {
       id: 'fullscreen',
       label: 'Fullscreen',
+      shortLabel: isFullscreen ? 'Window' : 'Fullscreen',
       icon: isFullscreen ? Shrink : Fullscreen,
       onClick: () => toggleFullscreen(setIsFullscreen, isFullscreen),
       active: isFullscreen,
     },
-    { id: 'login', label: authUser ? 'Account' : 'Login', icon: LogIn, onClick: () => setLoginOpen(true) },
   ]
 
   return (
-    <nav className="bottom-nav">
-      {items.map(({ id, label, icon: Icon, onClick, active, passive, staticLabel }) => (
+    <nav className="bottom-nav" aria-label="Quick actions">
+      {items.map(({ id, label, shortLabel, icon: Icon, onClick, active, passive }) => (
         <button
           key={id}
           className={`bottom-nav-item ${active ? 'is-active' : ''} ${passive ? 'is-passive' : ''}`}
           onClick={onClick}
-          title={id === 'streak' ? `Completed sessions: ${pomodoroSessions || 0}` : label}
+          title={label}
         >
           <Icon size={16} />
-          <span>{staticLabel ? `${pomodoroSessions || 0}` : label}</span>
+          <span>{shortLabel}</span>
         </button>
       ))}
     </nav>

@@ -4,11 +4,11 @@ import { Timer, FileText, Cloud, Clock, Disc3, Quote, Settings, Sparkles } from 
 import useZenflowStore from '../store/useZenflowStore'
 
 const WIDGETS = [
-  { id: 'pomodoro', label: 'Pomodoro', icon: Timer },
-  { id: 'notes', label: 'Notes', icon: FileText },
-  { id: 'weather', label: 'Weather', icon: Cloud },
+  { id: 'pomodoro', label: 'Timer', icon: Timer },
   { id: 'clock', label: 'Clock', icon: Clock },
-  { id: 'vinyl', label: 'Vinyl', icon: Disc3 },
+  { id: 'weather', label: 'Weather', icon: Cloud },
+  { id: 'notes', label: 'Notes', icon: FileText },
+  { id: 'vinyl', label: 'Music', icon: Disc3 },
   { id: 'quote', label: 'Quote', icon: Quote },
 ]
 
@@ -23,14 +23,28 @@ export default function WidgetToolbar() {
       onMouseLeave={() => setExpanded(false)}
     >
       <motion.div
-        animate={{ width: expanded ? 200 : 52 }}
+        animate={{ width: expanded ? 220 : 72 }}
         transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
         className="sidebar-panel"
       >
         <div className="sidebar-logo-wrap">
           <div className="sidebar-logo">Z</div>
+          <AnimatePresence>
+            {expanded ? (
+              <motion.div
+                className="sidebar-brand-copy"
+                initial={{ opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -6 }}
+              >
+                <strong>Zenflow</strong>
+                <span>Workspace layout</span>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
         </div>
 
+        <div className="sidebar-section-label">{expanded ? 'Visible widgets' : ''}</div>
         <div className="sidebar-items">
           {WIDGETS.map(({ id, label, icon: Icon }) => {
             const active = activeWidgets.includes(id)

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import useZenflowStore from '../store/useZenflowStore'
-import { AMBIENT_SOUNDS } from '../data/sounds'
+import { getSoundById } from '../data/sounds'
 
 export default function AmbientAudioPlayer() {
   const audioRef = useRef(null)
@@ -15,14 +15,18 @@ export default function AmbientAudioPlayer() {
 
     const onEnded = () => setAmbientPlaying(false)
     const onError = () => {
-      if (!audio.src) return
-      const source = audio.src
+      const sound = getSoundById(selectedSoundId)
+      const source = sound?.assetUrl || audio.src
+      if (!source) return
+
       if (!warnedSourcesRef.current.has(source)) {
         warnedSourcesRef.current.add(source)
         console.warn(`Ambient audio file is missing or failed to load: ${source}`)
-        const filename = source.split('/').pop() || 'selected audio file'
-        showToast(`Missing audio file: ${filename}`)
+        showToast(`Audio file is missing for ${sound?.title || 'the selected sound'}.`)
       }
+
+      audio.pause()
+      audio.currentTime = 0
       setAmbientPlaying(false)
     }
 
@@ -35,7 +39,7 @@ export default function AmbientAudioPlayer() {
       audio.removeEventListener('error', onError)
       audioRef.current = null
     }
-  }, [setAmbientPlaying, showToast])
+  }, [selectedSoundId, setAmbientPlaying, showToast])
 
   useEffect(() => {
     if (!audioRef.current) return
@@ -43,7 +47,7 @@ export default function AmbientAudioPlayer() {
   }, [ambientVolume])
 
   useEffect(() => {
-    const sound = AMBIENT_SOUNDS.find((item) => item.id === selectedSoundId)
+    const sound = getSoundById(selectedSoundId)
     const audio = audioRef.current
 
     if (!audio) return
@@ -55,27 +59,29 @@ export default function AmbientAudioPlayer() {
       return
     }
 
-    if (sound.plus && !isPremiumUser) {
+    if (sound.premium && !isPremiumUser) {
       audio.pause()
       setAmbientPlaying(false)
       showToast('This sound is available for Plus users.')
       return
     }
 
+    audio.loop = sound.loop !== false
+
     if (!ambientPlaying) {
       audio.pause()
       return
     }
 
-    if (!audio.src || !audio.src.endsWith(sound.src)) {
+    if (!audio.src || !audio.src.endsWith(sound.assetUrl)) {
       audio.pause()
-      audio.src = sound.src
+      audio.src = sound.assetUrl
       audio.currentTime = 0
       audio.load()
     }
 
     audio.play().catch(() => {
-      console.warn(`Ambient audio could not start automatically for ${sound.src}`)
+      console.warn(`Ambient audio could not start automatically for ${sound.assetUrl}`)
       showToast('Press play again if your browser blocked audio autoplay.')
     })
   }, [selectedSoundId, ambientPlaying, isPremiumUser, showToast, setAmbientPlaying])

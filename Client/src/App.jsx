@@ -50,6 +50,9 @@ const widgetVariants = {
   }),
 }
 
+const LEFT_COLUMN_WIDGETS = ['clock', 'weather']
+const RIGHT_COLUMN_WIDGETS = ['notes', 'vinyl', 'quote']
+
 export default function App() {
   const {
     activeWidgets,
@@ -125,6 +128,15 @@ export default function App() {
     }
   }, [setAuthLoading, setAuthUser])
 
+  const activeSet = new Set(activeWidgets)
+  const leftWidgets = LEFT_COLUMN_WIDGETS.filter((id) => activeSet.has(id))
+  const rightWidgets = RIGHT_COLUMN_WIDGETS.filter((id) => activeSet.has(id))
+  const overflowWidgets = activeWidgets.filter(
+    (id) => id !== 'pomodoro' && !LEFT_COLUMN_WIDGETS.includes(id) && !RIGHT_COLUMN_WIDGETS.includes(id)
+  )
+  const rightStack = [...rightWidgets, ...overflowWidgets]
+  const hasHero = activeSet.has('pomodoro')
+
   return (
     <div className="app-shell" data-background-theme={backgroundTheme}>
       <Background />
@@ -135,27 +147,103 @@ export default function App() {
       <CoffeeMugTimer />
 
       <main className={`layout-main ${notesTasksOpen || soundsOpen ? 'has-side-panel' : ''}`}>
-        <div className="widget-grid">
-          <AnimatePresence mode="popLayout">
-            {activeWidgets.map((id, index) => {
-              const Widget = WIDGET_MAP[id]
-              if (!Widget) return null
+        <div className="dashboard-shell">
+          <section className="dashboard-overview">
+            <div className="dashboard-section-heading">
+              <span className="eyebrow-label">Support widgets</span>
+              <h2>Room context</h2>
+            </div>
+            <div className="dashboard-stack dashboard-stack-left">
+              <AnimatePresence mode="popLayout">
+                {leftWidgets.map((id, index) => {
+                  const Widget = WIDGET_MAP[id]
+                  if (!Widget) return null
 
-              return (
-                <motion.div
-                  key={id}
-                  layout
-                  variants={widgetVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
-                  custom={index}
-                >
-                  <Widget />
-                </motion.div>
-              )
-            })}
-          </AnimatePresence>
+                  return (
+                    <motion.div
+                      key={id}
+                      layout
+                      variants={widgetVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
+                      custom={index}
+                    >
+                      <Widget />
+                    </motion.div>
+                  )
+                })}
+              </AnimatePresence>
+            </div>
+          </section>
+
+          <section className="dashboard-hero">
+            <div className="dashboard-section-heading dashboard-hero-heading">
+              <span className="eyebrow-label">Focus session</span>
+              <h1>Your calm focus dashboard</h1>
+              <p>The timer stays at the center while everything else supports the session.</p>
+            </div>
+
+            <div className="dashboard-hero-card">
+              <AnimatePresence mode="popLayout">
+                {hasHero ? (
+                  <motion.div
+                    key="pomodoro"
+                    layout
+                    variants={widgetVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
+                    custom={0}
+                  >
+                    <PomodoroWidget />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="pomodoro-empty"
+                    className="dashboard-empty-state"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 16 }}
+                  >
+                    <span className="eyebrow-label">Timer hidden</span>
+                    <h3>Bring the Pomodoro timer back into view</h3>
+                    <p>Use the sidebar to make the focus timer your dashboard hero again.</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </section>
+
+          <section className="dashboard-side">
+            <div className="dashboard-section-heading">
+              <span className="eyebrow-label">Productivity desk</span>
+              <h2>Notes, sound, and reflection</h2>
+            </div>
+
+            <div className="dashboard-stack dashboard-stack-right">
+              <AnimatePresence mode="popLayout">
+                {rightStack.map((id, index) => {
+                  const Widget = WIDGET_MAP[id]
+                  if (!Widget) return null
+
+                  return (
+                    <motion.div
+                      key={id}
+                      layout
+                      variants={widgetVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
+                      custom={index}
+                    >
+                      <Widget />
+                    </motion.div>
+                  )
+                })}
+              </AnimatePresence>
+            </div>
+          </section>
         </div>
 
         <div className="layout-side-panels">

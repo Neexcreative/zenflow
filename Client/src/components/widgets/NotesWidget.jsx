@@ -24,10 +24,10 @@ export default function NotesWidget() {
       <textarea
         value={notes}
         onChange={(event) => setNotes(event.target.value)}
-        placeholder="Write what is on your mind..."
+        placeholder="Capture a thought, blocker, or next step..."
         spellCheck={false}
         className="notes-textarea"
-        style={{ minHeight: expanded ? '60vh' : '160px' }}
+        style={{ minHeight: expanded ? '60vh' : '180px' }}
       />
 
       <div className="notes-footer">
@@ -39,7 +39,7 @@ export default function NotesWidget() {
               exit={{ opacity: 0, y: 4 }}
               className="notes-saved"
             >
-              ● Saved
+              Saved
             </motion.span>
           )}
         </AnimatePresence>
@@ -56,7 +56,7 @@ export default function NotesWidget() {
         headerRight={
           <div className="notes-header-right">
             <span>{wordCount} words</span>
-            <button onClick={() => setExpanded(true)} className="btn-ghost" title="Expand notes">
+            <button onClick={() => setExpanded(true)} className="icon-button" title="Expand notes">
               <Maximize2 size={14} />
             </button>
           </div>
@@ -75,7 +75,7 @@ export default function NotesWidget() {
             onClick={() => setExpanded(false)}
           >
             <motion.div
-              className="notes-modal-card"
+              className="notes-modal-card modal-shell-card"
               initial={{ opacity: 0, scale: 0.96, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 24 }}
@@ -83,10 +83,11 @@ export default function NotesWidget() {
             >
               <div className="notes-modal-header">
                 <div>
+                  <span className="eyebrow-label">Zenflow</span>
                   <div className="widget-card-title">Notes</div>
                   <p>Expanded space for deeper thinking and planning.</p>
                 </div>
-                <button onClick={() => setExpanded(false)} className="btn-ghost" title="Minimize notes">
+                <button onClick={() => setExpanded(false)} className="icon-button" title="Minimize notes">
                   <Minimize2 size={15} />
                 </button>
               </div>

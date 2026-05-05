@@ -1,72 +1,125 @@
-import { useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Check, Palette, X } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { Check, Image as ImageIcon, Lock, Palette, Video } from 'lucide-react'
 import useZenflowStore from '../store/useZenflowStore'
+import { BACKGROUND_FILTERS, BACKGROUND_GALLERY } from '../data/backgrounds'
+import ModalShell from './ModalShell'
 
-const BACKGROUNDS = [
-  { id: 'default', label: 'Default Gradient' },
-  { id: 'deep-focus', label: 'Deep Focus' },
-  { id: 'sunset-flow', label: 'Sunset Flow' },
-  { id: 'rainy-night', label: 'Rainy Night' },
-  { id: 'minimal-dark', label: 'Minimal Dark' },
-]
+function matchesFilter(item, filter) {
+  if (filter === 'All') return true
+  return item.category.toLowerCase() === filter.toLowerCase()
+}
+
+function TypeIcon({ type }) {
+  if (type === 'video') return <Video size={14} />
+  return <ImageIcon size={14} />
+}
 
 export default function BackgroundSwitcherModal() {
-  const { backgroundTheme, setBackgroundTheme, setBackgroundSwitcherOpen } = useZenflowStore()
-
-  useEffect(() => {
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') setBackgroundSwitcherOpen(false)
-    }
-
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  }, [setBackgroundSwitcherOpen])
-
+  const {
+    selectedBackgroundId,
+    setSelectedBackgroundId,
+    setBackgroundTheme,
+    setBackgroundSwitcherOpen,
+    isPremiumUser,
+    setUpgradeOpen,
+  } = useZenflowStore()
+  const [filter, setFilter] = useState('All')
+  const [failedThumbs, setFailedThumbs] = useState({})
   const close = () => setBackgroundSwitcherOpen(false)
 
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="overlay-modal"
-      onClick={close}
-    >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.96, y: 18 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96, y: 18 }}
-        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        className="feature-modal-card"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="modal-head">
-          <div>
-            <h2>Change Background</h2>
-            <p>Switch between a few polished gradients without leaving your workspace.</p>
-          </div>
-          <button type="button" onClick={close} className="btn-ghost">
-            <X size={16} />
-          </button>
-        </div>
+  const filteredBackgrounds = useMemo(
+    () => BACKGROUND_GALLERY.filter((item) => matchesFilter(item, filter)),
+    [filter]
+  )
 
-        <div className="background-option-grid">
-          {BACKGROUNDS.map((item) => (
+  const handleSelect = (item) => {
+    if (item.premium && !isPremiumUser) {
+      close()
+      setUpgradeOpen(true)
+      return
+    }
+
+    setSelectedBackgroundId(item.id)
+    if (item.fallbackTheme) {
+      setBackgroundTheme(item.fallbackTheme)
+    }
+  }
+
+  return (
+    <ModalShell
+      title="Background Gallery"
+      description="Choose a local background now, while keeping the data structure ready for future storage or CDN URLs."
+      onClose={close}
+      className="feature-modal-card background-gallery-modal"
+    >
+      <div className="gallery-filter-row">
+        {BACKGROUND_FILTERS.map((item) => (
+          <button
+            key={item}
+            className={`gallery-filter-pill ${filter === item ? 'is-active' : ''}`}
+            onClick={() => setFilter(item)}
+          >
+            {item}
+          </button>
+        ))}
+      </div>
+
+      <div className="background-gallery-grid">
+        {filteredBackgrounds.map((item) => {
+          const thumbFailed = failedThumbs[item.id]
+          const isActive = selectedBackgroundId === item.id
+          return (
             <button
               key={item.id}
-              className={`background-option background-${item.id} ${backgroundTheme === item.id ? 'is-active' : ''}`}
-              onClick={() => setBackgroundTheme(item.id)}
+              className={`background-gallery-card ${isActive ? 'is-active' : ''}`}
+              onClick={() => handleSelect(item)}
+              title={item.premium && !isPremiumUser ? 'Available for Plus users' : `Apply ${item.title}`}
             >
-              <span className="background-option-preview">
-                <Palette size={16} />
-              </span>
-              <span>{item.label}</span>
-              {backgroundTheme === item.id && <Check size={14} />}
+              <div className="background-gallery-preview">
+                {item.thumbnail && !thumbFailed ? (
+                  <img
+                    src={item.thumbnail}
+                    alt={item.title}
+                    onError={() =>
+                      setFailedThumbs((current) => ({
+                        ...current,
+                        [item.id]: true,
+                      }))
+                    }
+                  />
+                ) : (
+                  <div className={`background-gallery-fallback background-${item.fallbackTheme || 'default'}`}>
+                    <Palette size={18} />
+                  </div>
+                )}
+
+                <div className="background-gallery-meta-top">
+                  <span className="background-type-pill">
+                    <TypeIcon type={item.type} />
+                    <span>{item.type}</span>
+                  </span>
+                  {item.premium ? (
+                    <span className="sound-lock-pill">
+                      <Lock size={12} />
+                      <span>Plus</span>
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="background-gallery-copy">
+                <div>
+                  <strong>{item.title}</strong>
+                  <p>
+                    {item.category} · {item.mood}
+                  </p>
+                </div>
+                {isActive ? <Check size={16} /> : null}
+              </div>
             </button>
-          ))}
-        </div>
-      </motion.div>
-    </motion.div>
+          )
+        })}
+      </div>
+    </ModalShell>
   )
 }
