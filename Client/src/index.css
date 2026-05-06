@@ -2985,10 +2985,38 @@ body.cursor-clicking .cursor-dot {
   align-items: stretch;
 }
 
+.upgrade-modal-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.billing-toggle-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .billing-toggle-row {
   display: flex;
   gap: 8px;
-  margin-bottom: 18px;
+}
+
+.billing-toggle-pill {
+  min-height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.billing-toggle-pill.is-active {
+  color: var(--text-1);
+  background: rgba(108, 99, 255, 0.16);
+  border-color: rgba(108, 99, 255, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .upgrade-card {
@@ -2996,6 +3024,12 @@ body.cursor-clicking .cursor-dot {
   min-height: 100%;
   padding: 22px;
   border-radius: 24px;
+}
+
+.upgrade-card-topline {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
 }
 
 .upgrade-card.tone-pro {
@@ -3007,6 +3041,12 @@ body.cursor-clicking .cursor-dot {
 .upgrade-card.tone-premium {
   background:
     linear-gradient(180deg, rgba(0, 212, 170, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.03);
+}
+
+.upgrade-card-free {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)),
     rgba(255, 255, 255, 0.03);
 }
 
@@ -3034,6 +3074,11 @@ body.cursor-clicking .cursor-dot {
   background: linear-gradient(135deg, rgba(108, 99, 255, 0.95), rgba(0, 212, 170, 0.8));
 }
 
+.upgrade-badge-inline {
+  position: static;
+  transform: none;
+}
+
 .upgrade-card-banner {
   background: rgba(245, 158, 11, 0.14);
   border: 1px solid rgba(245, 158, 11, 0.2);
@@ -3047,6 +3092,13 @@ body.cursor-clicking .cursor-dot {
 
 .upgrade-card-price strong {
   font-size: 42px;
+}
+
+.upgrade-card-helper {
+  min-height: 18px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
 }
 
 .upgrade-feature-list li {
@@ -3554,6 +3606,14 @@ body.cursor-clicking .cursor-dot {
 
   .task-row {
     grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  }
+
+  .billing-toggle-row {
+    width: 100%;
+  }
+
+  .billing-toggle-pill {
+    flex: 1;
   }
 }
 

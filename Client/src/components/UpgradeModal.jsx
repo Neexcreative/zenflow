@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Check, Sparkles, Zap } from 'lucide-react'
 import useZenflowStore from '../store/useZenflowStore'
 import ModalShell from './ModalShell'
@@ -7,25 +7,42 @@ const BILLING_OPTIONS = [
   {
     id: 'monthly',
     label: 'Monthly',
-    price: '€2',
-    cadence: '/month',
-    badge: '',
+    badge: 'Monthly',
+    price: '\u20ac2',
+    cadence: '/ month',
+    helper: '',
+    tone: 'tone-pro',
+    features: [
+      'All widgets unlocked',
+      'Premium themes and desk layouts',
+      'Expanded sounds and music tools',
+      'Advanced focus stats',
+      'Background and mood customization',
+      'Priority product support',
+    ],
   },
   {
     id: 'yearly',
     label: 'Yearly',
-    price: '€20',
-    cadence: '/year',
     badge: 'Best Value',
+    price: '\u20ac20',
+    cadence: '/ year',
+    helper: 'Save compared to monthly billing.',
+    tone: 'tone-premium',
+    features: [
+      'Everything in Monthly',
+      'Best value for daily focus use',
+      'Early access to future upgrades',
+      'Priority product support',
+    ],
   },
 ]
 
-const FREE_FEATURES = ['3 active widgets', 'Pomodoro timer', 'Quick notes and tasks', 'Core ambient sounds']
-const PLUS_FEATURES = [
-  'All widgets unlocked',
-  'Premium themes and gallery access',
-  'Expanded sound library',
-  'No Zenflow branding',
+const FREE_FEATURES = [
+  '3 active widgets',
+  'Pomodoro timer',
+  'Quick notes and tasks',
+  'Core ambient sounds',
 ]
 
 export default function UpgradeModal() {
@@ -34,7 +51,10 @@ export default function UpgradeModal() {
   const [loading, setLoading] = useState(false)
   const close = () => setUpgradeOpen(false)
 
-  const activeBilling = BILLING_OPTIONS.find((item) => item.id === billing) || BILLING_OPTIONS[0]
+  const activeBilling = useMemo(
+    () => BILLING_OPTIONS.find((item) => item.id === billing) || BILLING_OPTIONS[0],
+    [billing]
+  )
 
   const handleUpgrade = async () => {
     if (authLoading) return
@@ -76,80 +96,89 @@ export default function UpgradeModal() {
   return (
     <ModalShell
       title="Upgrade Zenflow"
-      description="Choose test-mode billing for Zenflow Plus. Lifetime is intentionally hidden for now."
+      description="Unlock your complete focus workspace."
       onClose={close}
       className="upgrade-modal-card"
     >
-      <div className="billing-toggle-row" role="tablist" aria-label="Billing interval">
-        {BILLING_OPTIONS.map((option) => (
-          <button
-            key={option.id}
-            className={`gallery-filter-pill ${billing === option.id ? 'is-active' : ''}`}
-            onClick={() => setBilling(option.id)}
-            type="button"
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="upgrade-plan-grid upgrade-plan-grid-compact">
-        <div className="upgrade-card tone-muted">
-          <div className="upgrade-card-head">
-            <div className="upgrade-card-name">
-              <Zap size={15} />
-              <span>Free</span>
-            </div>
-            <div className="upgrade-card-price">
-              <strong>€0</strong>
-              <span>Current access</span>
-            </div>
-          </div>
-
-          <ul className="upgrade-feature-list">
-            {FREE_FEATURES.map((feature) => (
-              <li key={feature}>
-                <Check size={13} />
-                <span>{feature}</span>
-              </li>
+      <div className="upgrade-modal-shell">
+        <div className="billing-toggle-block">
+          <span className="eyebrow-label">Billing</span>
+          <div className="billing-toggle-row" role="tablist" aria-label="Billing interval">
+            {BILLING_OPTIONS.map((option) => (
+              <button
+                key={option.id}
+                className={`billing-toggle-pill ${billing === option.id ? 'is-active' : ''}`}
+                onClick={() => setBilling(option.id)}
+                type="button"
+                role="tab"
+                aria-selected={billing === option.id}
+              >
+                {option.label}
+              </button>
             ))}
-          </ul>
-
-          <button disabled className="upgrade-cta is-disabled tone-muted">
-            Current plan
-          </button>
+          </div>
         </div>
 
-        <div className={`upgrade-card ${billing === 'yearly' ? 'tone-premium' : 'tone-pro'}`}>
-          {activeBilling.badge ? <div className="upgrade-badge">{activeBilling.badge}</div> : null}
+        <div className="upgrade-plan-grid upgrade-plan-grid-compact">
+          <div className="upgrade-card tone-muted upgrade-card-free">
+            <div className="upgrade-card-head">
+              <div className="upgrade-card-name">
+                <Zap size={15} />
+                <span>Zenflow Free</span>
+              </div>
+              <div className="upgrade-card-price">
+                <strong>{'\u20ac0'}</strong>
+                <span>Current access</span>
+              </div>
+            </div>
 
-          <div className="upgrade-card-head">
-            <div className="upgrade-card-name">
-              <Sparkles size={15} />
-              <span>Zenflow Plus</span>
-            </div>
-            <div className="upgrade-card-price">
-              <strong>{activeBilling.price}</strong>
-              <span>{activeBilling.cadence}</span>
-            </div>
+            <p className="upgrade-card-helper">Current access</p>
+
+            <ul className="upgrade-feature-list">
+              {FREE_FEATURES.map((feature) => (
+                <li key={feature}>
+                  <Check size={13} />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button disabled className="upgrade-cta is-disabled tone-muted">
+              Current plan
+            </button>
           </div>
 
-          <ul className="upgrade-feature-list">
-            {PLUS_FEATURES.map((feature) => (
-              <li key={feature}>
-                <Check size={13} />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
+          <div className={`upgrade-card upgrade-card-plus ${activeBilling.tone}`}>
+            <div className="upgrade-card-topline">
+              <span className="upgrade-badge upgrade-badge-inline">{activeBilling.badge}</span>
+            </div>
 
-          <button
-            className={`upgrade-cta ${billing === 'yearly' ? 'tone-premium' : 'tone-pro'}`}
-            onClick={handleUpgrade}
-            disabled={loading || authLoading}
-          >
-            {loading ? 'Redirecting...' : 'Upgrade to Zenflow Plus'}
-          </button>
+            <div className="upgrade-card-head">
+              <div className="upgrade-card-name">
+                <Sparkles size={15} />
+                <span>Zenflow Plus</span>
+              </div>
+              <div className="upgrade-card-price">
+                <strong>{activeBilling.price}</strong>
+                <span>{activeBilling.cadence}</span>
+              </div>
+            </div>
+
+            <p className="upgrade-card-helper">{activeBilling.helper || 'Complete your calm premium workspace.'}</p>
+
+            <ul className="upgrade-feature-list">
+              {activeBilling.features.map((feature) => (
+                <li key={feature}>
+                  <Check size={13} />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            <button className={`upgrade-cta ${activeBilling.tone}`} onClick={handleUpgrade} disabled={loading || authLoading}>
+              {loading ? 'Redirecting...' : 'Upgrade to Zenflow Plus'}
+            </button>
+          </div>
         </div>
       </div>
     </ModalShell>
