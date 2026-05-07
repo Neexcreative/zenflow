@@ -83,7 +83,6 @@ export default function NotesWidget() {
             >
               <div className="notes-modal-header">
                 <div>
-                  <span className="eyebrow-label">Zenflow</span>
                   <div className="widget-card-title">Notes</div>
                   <p>Expanded space for deeper thinking and planning.</p>
                 </div>

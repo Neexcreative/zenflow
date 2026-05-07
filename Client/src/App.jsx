@@ -197,10 +197,6 @@ export default function App() {
       <main className={`layout-main ${notesTasksOpen || soundsOpen ? 'has-side-panel' : ''}`}>
         <div className="dashboard-shell">
           <section className="dashboard-overview">
-            <div className="dashboard-section-heading">
-              <span className="eyebrow-label">Support widgets</span>
-              <h2>Room context</h2>
-            </div>
             <div className="dashboard-stack dashboard-stack-left">
               <AnimatePresence mode="popLayout">
                 {leftWidgets.map((id, index) => {
@@ -226,12 +222,6 @@ export default function App() {
           </section>
 
           <section className="dashboard-hero">
-            <div className="dashboard-section-heading dashboard-hero-heading">
-              <span className="eyebrow-label">Focus session</span>
-              <h1>Your calm focus dashboard</h1>
-              <p>The timer stays at the center while everything else supports the session.</p>
-            </div>
-
             <div className="dashboard-hero-card">
               <AnimatePresence mode="popLayout">
                 {hasHero ? (
@@ -264,11 +254,6 @@ export default function App() {
           </section>
 
           <section className="dashboard-side">
-            <div className="dashboard-section-heading">
-              <span className="eyebrow-label">Productivity desk</span>
-              <h2>Notes, sound, and reflection</h2>
-            </div>
-
             <div className="dashboard-stack dashboard-stack-right">
               <AnimatePresence mode="popLayout">
                 {rightStack.map((id, index) => {

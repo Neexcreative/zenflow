@@ -48,7 +48,7 @@ export default function BackgroundSwitcherModal() {
   return (
     <ModalShell
       title="Background Gallery"
-      description="Choose a local background now, while keeping the data structure ready for future storage or CDN URLs."
+      description="Set the mood for your session."
       onClose={close}
       className="feature-modal-card background-gallery-modal"
     >

@@ -105,7 +105,7 @@ export default function SoundsPanel() {
         <div>
           <span className="eyebrow-label">Ambient audio</span>
           <h3>Sound Gallery</h3>
-          <p>Metadata-driven local sounds now, with the same structure ready for future storage or CDN URLs.</p>
+          <p>Curated sounds to build your focus environment.</p>
         </div>
         <button className="icon-button" onClick={() => setSoundsOpen(false)} aria-label="Close sounds panel">
           <X size={16} />

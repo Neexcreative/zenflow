@@ -76,21 +76,9 @@ export default function PomodoroWidget() {
         animate={pomodoroRunning ? { opacity: [1, 0.9, 1] } : { opacity: 1 }}
         transition={{ duration: 3, repeat: pomodoroRunning ? Infinity : 0, ease: 'easeInOut' }}
       >
-        <div className="pomodoro-hero-copy">
-          <div>
-            <h3>{pomodoroMode === 'focus' ? 'Protected focus time' : 'Intentional recovery'}</h3>
-            <p>
-              {pomodoroMode === 'focus'
-                ? 'Keep the room quiet and move one meaningful task forward.'
-                : pomodoroMode === 'shortBreak'
-                  ? 'Step back for a quick reset before the next round.'
-                  : 'Take a longer pause and recharge your attention.'}
-            </p>
-          </div>
-          <div className="pomodoro-summary">
-            <span>Session {completedRounds + 1}</span>
-            <strong>{pomodoroDurations[pomodoroMode]} min</strong>
-          </div>
+        <div className="pomodoro-summary">
+          <span>Session {completedRounds + 1}</span>
+          <strong>{pomodoroDurations[pomodoroMode]} min</strong>
         </div>
 
         <div className="pomodoro-pills">

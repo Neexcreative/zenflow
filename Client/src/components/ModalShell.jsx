@@ -38,7 +38,6 @@ export default function ModalShell({
       >
         <div className="modal-head">
           <div>
-            <span className="eyebrow-label">Zenflow</span>
             <h2>{title}</h2>
             {description ? <p>{description}</p> : null}
           </div>

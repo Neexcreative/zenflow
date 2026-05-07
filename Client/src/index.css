@@ -2290,30 +2290,6 @@ body.cursor-clicking .cursor-dot {
   min-height: 100%;
 }
 
-.dashboard-section-heading {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 6px 4px 0;
-}
-
-.dashboard-section-heading h1,
-.dashboard-section-heading h2 {
-  font-size: clamp(1.4rem, 1.25rem + 0.6vw, 2.2rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-}
-
-.dashboard-section-heading h2 {
-  font-size: clamp(1.05rem, 1rem + 0.3vw, 1.4rem);
-}
-
-.dashboard-section-heading p {
-  max-width: 46ch;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--text-2);
-}
 
 .eyebrow-label {
   font-size: 10px;
@@ -2666,26 +2642,6 @@ body.cursor-clicking .cursor-dot {
   gap: 24px;
 }
 
-.pomodoro-hero-copy {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: flex-start;
-}
-
-.pomodoro-hero-copy h3 {
-  font-size: clamp(1.6rem, 1.4rem + 0.6vw, 2.25rem);
-  font-weight: 500;
-  letter-spacing: -0.05em;
-}
-
-.pomodoro-hero-copy p {
-  max-width: 42ch;
-  margin-top: 8px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--text-2);
-}
 
 .pomodoro-summary {
   min-width: 130px;
@@ -3551,11 +3507,6 @@ body.cursor-clicking .cursor-dot {
     min-width: auto;
   }
 
-  .dashboard-section-heading h1 {
-    font-size: 1.7rem;
-  }
-
-  .pomodoro-hero-copy,
   .panel-row-between,
   .desk-card-head,
   .tasks-card-head,
