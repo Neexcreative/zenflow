@@ -13,8 +13,8 @@ export default function VinylWidget() {
           <svg width="90" height="90" viewBox="0 0 90 90" aria-hidden="true">
             <defs>
               <radialGradient id="vinylCenter">
-                <stop offset="0%" stopColor="#6C63FF" />
-                <stop offset="100%" stopColor="#00D4AA" />
+                <stop offset="0%" stopColor="#9d98ff" />
+                <stop offset="100%" stopColor="#6C63FF" />
               </radialGradient>
               <clipPath id="thumbClip">
                 <circle cx="45" cy="45" r="14" />

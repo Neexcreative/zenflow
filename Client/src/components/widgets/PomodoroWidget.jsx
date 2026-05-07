@@ -111,10 +111,6 @@ export default function PomodoroWidget() {
         <div className="pomodoro-dial">
           <svg viewBox="0 0 120 120" className="pomodoro-svg" aria-hidden="true">
             <defs>
-              <linearGradient id="pomGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#6C63FF" />
-                <stop offset="100%" stopColor="#00D4AA" />
-              </linearGradient>
               <filter id="pomGlow">
                 <feGaussianBlur stdDeviation="2" result="blur" />
                 <feMerge>
@@ -129,7 +125,7 @@ export default function PomodoroWidget() {
               cy="60"
               r="52"
               fill="none"
-              stroke="url(#pomGradient)"
+              stroke="#6C63FF"
               strokeWidth="5"
               strokeLinecap="round"
               strokeDasharray={circumference}

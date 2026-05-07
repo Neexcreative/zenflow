@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-07T00:00:00.000Z",
+  "title": "Design System: Zenflow",
+  "extensions": {
+    "colorMeta": {
+      "void-base":      { "role": "neutral",   "displayName": "Void Base",       "canonical": "#08080f", "tonalRamp": ["#08080f","#0d0d16","#12121e","#181828","#212133","#2e2e48","#3e3e62","#5a5a8a"] },
+      "bg-surface":     { "role": "neutral",   "displayName": "Glass Surface",   "canonical": "#0f0f16", "tonalRamp": ["#0f0f16","#131320","#18182a","#1e1e36","#252542","#2e2e52","#3c3c68","#515185"] },
+      "bg-elevated":    { "role": "neutral",   "displayName": "Glass Elevated",  "canonical": "#14141b", "tonalRamp": ["#14141b","#181826","#1e1e30","#25253c","#2e2e4a","#38385a","#48486e","#606080"] },
+      "deep-indigo":    { "role": "primary",   "displayName": "Deep Indigo",     "canonical": "#6c63ff", "tonalRamp": ["#1a1840","#28256a","#373394","#4c49c0","#6c63ff","#8a82ff","#a8a3ff","#ccc9ff"] },
+      "arctic-teal":    { "role": "secondary", "displayName": "Arctic Teal",     "canonical": "#00d4aa", "tonalRamp": ["#003328","#005542","#007a61","#00a07f","#00d4aa","#33debb","#66e8cc","#99f2dd"] },
+      "warm-amber":     { "role": "tertiary",  "displayName": "Warm Amber",      "canonical": "#f59e0b", "tonalRamp": ["#3d2800","#6a4400","#976200","#c47f00","#f59e0b","#f7b03c","#f9c46d","#fbd89e"] },
+      "primary-text":   { "role": "neutral",   "displayName": "Primary Text",    "canonical": "#eeeeff", "tonalRamp": ["#22223a","#33334e","#444462","#666688","#9999bb","#bbbbd4","#d8d8ee","#eeeeff"] },
+      "secondary-text": { "role": "neutral",   "displayName": "Secondary Text",  "canonical": "#7777aa", "tonalRamp": ["#111128","#1e1e40","#2d2d5a","#454572","#5c5c8e","#7777aa","#9494c2","#b3b3d8"] },
+      "border-subtle":  { "role": "neutral",   "displayName": "Border Subtle",   "canonical": "#16161c", "tonalRamp": ["#08080f","#0f0f18","#16161c","#1e1e28","#282836","#333344","#404055","#555568"] },
+      "border-accent":  { "role": "primary",   "displayName": "Border Accent",   "canonical": "#2b2863", "tonalRamp": ["#0e0d26","#161440","#1f1c5a","#282474","#312c8e","#4a44b0","#6b65cc","#9490e8"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "Large numerical readouts — weather temperature, hero numbers. Weight 200 reads as engraved, not printed." },
+      "headline": { "displayName": "Headline", "purpose": "Modal titles. The system's largest heading — quiet confidence, never announcement." },
+      "title":    { "displayName": "Title",    "purpose": "Side panel headings, task section headers. Only weight that reads as heading at small scale." },
+      "body":     { "displayName": "Body",     "purpose": "Notes, modal copy, feature lists. Line-height 1.9 is intentional — it breathes. Max 65ch in reading contexts." },
+      "label":    { "displayName": "Label",    "purpose": "Widget card headers (FOCUS, WEATHER), sidebar labels. All-caps + tracking at 10px creates quiet hierarchy without size increase." },
+      "mono":     { "displayName": "Mono",     "purpose": "Clock, Pomodoro countdown, pricing, keyboard hints. Space Mono only for numbers and precision readouts." }
+    },
+    "shadows": [
+      { "name": "widget-ambient",  "value": "0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)",  "purpose": "Default widget card shadow. Inset top highlight simulates glass edge. Always present." },
+      { "name": "widget-hover",    "value": "0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(108,99,255,0.06), inset 0 1px 0 rgba(255,255,255,0.07)", "purpose": "Hover state only. Adds faint Indigo glow — proximity signal, not elevation." },
+      { "name": "accent-glow",     "value": "0 10px 30px rgba(108,99,255,0.25)",    "purpose": "Logo mark, primary CTA, sidebar brand mark. Identity signal." },
+      { "name": "accent-glow-xl",  "value": "0 14px 32px rgba(108,99,255,0.35)",    "purpose": "Primary button hover state." },
+      { "name": "teal-pulse",      "value": "0 0 14px rgba(0,212,170,0.5)",         "purpose": "Custom cursor dot, playing indicator. Live-state signal only." }
+    ],
+    "motion": [
+      { "name": "ease-standard",   "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions (color, background, border)." },
+      { "name": "ease-lift",       "value": "cubic-bezier(0.4, 0, 0.2, 1)", "duration": "0.3s", "purpose": "Widget card hover lift (translateY -2px)." },
+      { "name": "mesh-pulse",      "value": "20s ease-in-out infinite alternate", "purpose": "Ambient mesh background animation — scale + rotate. Reduced-motion: disabled." },
+      { "name": "spin",            "value": "4s linear infinite",            "purpose": "Vinyl disc rotation when playing." },
+      { "name": "blink-colon",     "value": "1s ease-in-out infinite",       "purpose": "Clock colon blink — 50% opacity at midpoint." },
+      { "name": "steam",           "value": "3s ease-in-out infinite",       "purpose": "Coffee widget steam wisps." }
+    ],
+    "breakpoints": [
+      { "name": "mobile",  "value": "640px",  "notes": "Sidebar hidden; bottom nav collapses labels; modals go full-width." },
+      { "name": "tablet",  "value": "900px",  "notes": "Single-column layout; side panel becomes static; widget grid collapses to 1 col." },
+      { "name": "desktop", "value": "901px+", "notes": "Full sidebar + widget grid + optional side panel at 360px." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The primary CTA. Gradient Indigo→Teal with an accent glow. Used for submit actions, upgrade prompts, and primary modal actions.",
+      "html": "<button class=\"ds-btn-primary\">Start Focus</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 34px; padding: 0 16px; border: none; border-radius: 10px; background: linear-gradient(135deg, rgba(108,99,255,0.95), rgba(0,212,170,0.8)); color: #eeeeff; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 400; cursor: pointer; box-shadow: 0 10px 30px rgba(108,99,255,0.25); transition: transform 0.2s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba(108,99,255,0.35); } .ds-btn-primary:active { transform: translateY(0); }"
+    },
+    {
+      "name": "Ghost Icon Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Icon-only action button. Used in widget card headers, top navigation, and inline actions.",
+      "html": "<button class=\"ds-btn-ghost\" aria-label=\"Refresh\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"23 4 23 10 17 10\"/><path d=\"M20.49 15a9 9 0 1 1-2.12-9.36L23 10\"/></svg></button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; padding: 6px; border: none; border-radius: 8px; background: transparent; color: #7777aa; cursor: pointer; transition: background 0.2s, color 0.2s; } .ds-btn-ghost:hover { background: rgba(255,255,255,0.07); color: #eeeeff; } .ds-btn-ghost:focus-visible { outline: 2px solid rgba(108,99,255,0.5); outline-offset: 2px; }"
+    },
+    {
+      "name": "Widget Card",
+      "kind": "card",
+      "refersTo": "widget-card",
+      "description": "The primary repeating container. Glassmorphic, gently rounded, with hover lift.",
+      "html": "<div class=\"ds-widget-card\"><div class=\"ds-widget-header\"><span class=\"ds-widget-label\">FOCUS</span></div><div class=\"ds-widget-body\"><p>Widget content goes here.</p></div></div>",
+      "css": ".ds-widget-card { background: rgba(255,255,255,0.028); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.055); border-radius: 18px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05); transition: all 0.3s cubic-bezier(0.4,0,0.2,1); } .ds-widget-card:hover { border-color: rgba(108,99,255,0.2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(108,99,255,0.06), inset 0 1px 0 rgba(255,255,255,0.07); } .ds-widget-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 0; } .ds-widget-label { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 0.12em; color: #7777aa; text-transform: uppercase; } .ds-widget-body { padding: 12px 18px 18px; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 300; line-height: 1.9; color: #eeeeff; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Standard text input. Semi-transparent background, Indigo focus border.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Enter city...\">",
+      "css": ".ds-input { height: 34px; width: 100%; padding: 0 14px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.055); color: #eeeeff; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 300; transition: border-color 0.2s, background 0.2s; } .ds-input::placeholder { color: rgba(238,238,255,0.35); } .ds-input:focus { outline: none; border-color: rgba(108,99,255,0.35); background: rgba(255,255,255,0.057); } .ds-input:focus-visible { outline: none; }"
+    },
+    {
+      "name": "Filter Chip – Active",
+      "kind": "chip",
+      "refersTo": "chip-active",
+      "description": "Selected filter or mode pill. Indigo-tinted fill.",
+      "html": "<button class=\"ds-chip ds-chip--active\">Focus</button>",
+      "css": ".ds-chip { height: auto; padding: 8px 14px; border-radius: 999px; font-family: 'Outfit', sans-serif; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border: 1px solid; transition: background 0.2s, color 0.2s, border-color 0.2s; } .ds-chip--active { background: rgba(108,99,255,0.16); border-color: rgba(108,99,255,0.35); color: #eeeeff; } .ds-chip--inactive { background: transparent; border-color: rgba(255,255,255,0.055); color: #7777aa; } .ds-chip--inactive:hover { color: #eeeeff; background: rgba(255,255,255,0.05); }"
+    },
+    {
+      "name": "Sidebar Navigation Item",
+      "kind": "nav",
+      "refersTo": "button-ghost",
+      "description": "Fixed icon sidebar. 52px wide. Items are 36px tall icon buttons with hover and active states.",
+      "html": "<nav class=\"ds-sidebar\"><button class=\"ds-nav-item ds-nav-item--active\" aria-label=\"Focus\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg><span class=\"ds-nav-label\">Focus</span></button><button class=\"ds-nav-item\" aria-label=\"Tasks\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"9 11 12 14 22 4\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/></svg><span class=\"ds-nav-label\">Tasks</span></button></nav>",
+      "css": ".ds-sidebar { display: flex; flex-direction: column; gap: 4px; padding: 12px 8px; } .ds-nav-item { width: 100%; height: 36px; display: flex; align-items: center; gap: 12px; padding: 0 10px; border: none; border-radius: 10px; background: transparent; color: #7777aa; font-family: 'Outfit', sans-serif; font-size: 13px; cursor: pointer; transition: background 0.2s, color 0.2s; white-space: nowrap; } .ds-nav-item:hover { background: rgba(255,255,255,0.05); color: #eeeeff; } .ds-nav-item--active { background: rgba(108,99,255,0.15); color: #00d4aa; } .ds-nav-label { font-size: 13px; }"
+    },
+    {
+      "name": "Upgrade Badge",
+      "kind": "chip",
+      "refersTo": "chip-active",
+      "description": "Amber-tinted PLUS badge. Used exclusively for premium/upgrade signals. Never for standard interactions.",
+      "html": "<span class=\"ds-upgrade-badge\">PLUS</span>",
+      "css": ".ds-upgrade-badge { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; border-radius: 999px; background: rgba(245,158,11,0.14); border: 1px solid rgba(245,158,11,0.18); color: #f59e0b; font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Midnight Studio",
+    "overview": "Zenflow is a professional's late-night workspace — dark, polished, everything exactly where it belongs. The interface should feel like premium gear in a quiet room: intentional, unhurried, and completely in service of the work happening inside it.\n\nThe atmosphere is the product. Background themes, ambient sounds, and the breathing mesh animation are not decoration — they are first-class UI. Every design decision defers to the ambient experience.\n\nThis system explicitly rejects gamified productivity: no achievement toasts, no streak counters, no XP bars, no confetti. Zenflow earns loyalty through experience, not reward loops.",
+    "keyCharacteristics": [
+      "Near-void backgrounds (#08080f) with barely-there glass surfaces",
+      "Two named accents: Deep Indigo (primary) + Arctic Teal (active/live states)",
+      "Warm Amber reserved exclusively for upgrade/premium signals",
+      "Outfit (light weight) + Space Mono pairing — calm prose + precise numbers",
+      "Flat by default; depth from border glow, transparency, and blur — not shadow height",
+      "Motion is ambient, not celebratory: mesh pulse, colon blink, weather animation — never a pop-in or confetti"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule",      "body": "Deep Indigo and Arctic Teal never compete on the same element. Indigo owns identity and selection; Teal owns live state.", "section": "colors" },
+      { "name": "The Amber Cordon",         "body": "Warm Amber is reserved for upgrade and premium signals. It must not appear in interactive states, focus rings, hover effects, or any element that a free-tier user sees as a normal action prompt.", "section": "colors" },
+      { "name": "The Featherweight Rule",   "body": "Default to Outfit weight 300. Use 400 only for titles and interactive control labels. Use 600 only for sidebar logo and pricing strong values.", "section": "typography" },
+      { "name": "The Mono Boundary",        "body": "Space Mono is for numbers and code-adjacent labels only: clock, timer, keyboard shortcut hints, pricing, monospace input fields. Never in prose, navigation items, or widget body copy.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. The ambient shadow on widget cards is structural (glass edge simulation), not elevation. Add Indigo glow on hover only — never at rest.", "section": "elevation" },
+      { "name": "The No-Decoration Rule",   "body": "Chips carry no icons, no indicators, no dots. The active/inactive border + color shift is the entire vocabulary.", "section": "components" },
+      { "name": "The Ambient Priority Rule","body": "Background theme changes and ambient mesh animations must never be blocked by UI state. Modals and panels use semi-transparent backgrounds — never opaque fills that kill the ambient layer underneath.", "section": "components" }
+    ],
+    "dos": [
+      "Do use backdrop-filter: blur(24px) on every glass surface — widget cards, modals, header, sidebar.",
+      "Do treat Arctic Teal (#00d4aa) as the live/active signal. Any running process, playing media, or active timer gets a Teal treatment.",
+      "Do keep Outfit at weight 300 as the default. Reach for 400 only when a title must read as a heading.",
+      "Do animate widget card hover as translateY(-2px) — the slight lift is the interface's primary gesture language.",
+      "Do use Space Mono for all numeric readouts: clocks, countdown timers, pricing, keyboard hints.",
+      "Do respect prefers-reduced-motion. Expand this coverage with every new animated feature.",
+      "Do let the ambient layer show through every surface. New components must have semi-transparent backgrounds.",
+      "Do use uppercase labels (10px/500/0.12em tracking) as the only heading treatment at small scale."
+    ],
+    "donts": [
+      "Don't add gamification mechanics — achievement toasts, streak counters, XP bars, level-up animations, or confetti.",
+      "Don't use Warm Amber (#f59e0b) for anything a free-tier user interacts with in a normal session.",
+      "Don't place Deep Indigo and Arctic Teal side-by-side at equal saturation.",
+      "Don't add structural box-shadows that simulate real-world elevation (large blur, significant offset, dark color).",
+      "Don't use solid opaque fills for any overlay, panel, or modal background. The ambient layer must always breathe through.",
+      "Don't use Space Mono for prose, navigation labels, or widget body copy.",
+      "Don't interrupt the ambient environment with celebratory, alarming, or high-motion UI patterns.",
+      "Don't design for the list: avoid feature-checklist UI that emphasizes quantity over experience."
+    ]
+  }
+}

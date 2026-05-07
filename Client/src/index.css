@@ -248,7 +248,7 @@ button {
   font-size: 14px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, var(--accent), var(--accent-teal));
+  background: var(--accent);
   box-shadow: 0 10px 30px rgba(108, 99, 255, 0.25);
 }
 
@@ -489,12 +489,13 @@ button {
   padding: 0 16px;
   border-radius: 10px;
   color: white;
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.95), rgba(0, 212, 170, 0.8));
+  background: var(--accent);
   box-shadow: 0 10px 30px rgba(108, 99, 255, 0.25);
 }
 
 .btn-accent:hover {
   transform: translateY(-1px);
+  filter: brightness(1.12);
   box-shadow: 0 14px 32px rgba(108, 99, 255, 0.35);
 }
 
@@ -678,7 +679,7 @@ body.cursor-clicking .cursor-dot {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.22), rgba(0, 212, 170, 0.18));
+  background: rgba(108, 99, 255, 0.22);
   border: 1px solid rgba(108, 99, 255, 0.28);
   color: var(--text-1);
   box-shadow: 0 12px 24px rgba(108, 99, 255, 0.18);
@@ -790,7 +791,7 @@ body.cursor-clicking .cursor-dot {
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--accent-teal);
+  color: var(--text-2);
 }
 
 .weather-temp {
@@ -1039,7 +1040,7 @@ body.cursor-clicking .cursor-dot {
   font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-teal);
+  color: var(--text-2);
 }
 
 .quote-refresh:hover {
@@ -1373,8 +1374,14 @@ body.cursor-clicking .cursor-dot {
 
 .primary-pill {
   color: white;
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.95), rgba(0, 212, 170, 0.82));
+  background: var(--accent);
   box-shadow: 0 14px 30px rgba(108, 99, 255, 0.2);
+}
+
+.primary-pill:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.12);
+  box-shadow: 0 18px 32px rgba(108, 99, 255, 0.28);
 }
 
 .secondary-pill {
@@ -1424,7 +1431,7 @@ body.cursor-clicking .cursor-dot {
   justify-content: center;
   border-radius: 12px;
   background: rgba(108, 99, 255, 0.12);
-  color: var(--accent-teal);
+  color: var(--text-1);
 }
 
 .login-helper-copy {
@@ -1462,7 +1469,7 @@ body.cursor-clicking .cursor-dot {
   align-items: center;
   justify-content: center;
   background: rgba(108, 99, 255, 0.12);
-  color: var(--accent-teal);
+  color: var(--text-1);
 }
 
 .account-copy {
@@ -1499,9 +1506,9 @@ body.cursor-clicking .cursor-dot {
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.16), rgba(0, 212, 170, 0.12));
-  color: var(--accent-amber);
-  border: 1px solid rgba(245, 158, 11, 0.18);
+  background: rgba(108, 99, 255, 0.14);
+  color: var(--accent);
+  border: 1px solid rgba(108, 99, 255, 0.2);
 }
 
 .coffee-widget {
@@ -1940,11 +1947,11 @@ body.cursor-clicking .cursor-dot {
 
 .bottom-nav-item.is-active {
   color: white;
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.9), rgba(0, 212, 170, 0.65));
+  background: rgba(108, 99, 255, 0.88);
 }
 
 .bottom-nav-item.is-passive {
-  color: var(--accent-amber);
+  color: var(--text-2);
 }
 
 .background-option-grid {
@@ -2416,7 +2423,7 @@ body.cursor-clicking .cursor-dot {
 }
 
 .sidebar-item.is-active {
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.18), rgba(0, 212, 170, 0.09));
+  background: rgba(108, 99, 255, 0.18);
   border: 1px solid rgba(108, 99, 255, 0.22);
 }
 
@@ -2457,7 +2464,7 @@ body.cursor-clicking .cursor-dot {
   justify-content: center;
   border-radius: 14px;
   font-weight: 600;
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.95), rgba(0, 212, 170, 0.72));
+  background: var(--accent);
   box-shadow: 0 14px 28px rgba(108, 99, 255, 0.22);
 }
 
@@ -2632,7 +2639,7 @@ body.cursor-clicking .cursor-dot {
 
 .primary-pill,
 .btn-accent {
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.96), rgba(0, 212, 170, 0.82));
+  background: var(--accent);
   box-shadow: 0 18px 36px rgba(108, 99, 255, 0.22);
 }
 
@@ -2783,7 +2790,7 @@ body.cursor-clicking .cursor-dot {
   height: 54px;
   gap: 10px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.3), rgba(0, 212, 170, 0.22));
+  background: rgba(108, 99, 255, 0.26);
   border: 1px solid rgba(108, 99, 255, 0.28);
 }
 
@@ -3251,7 +3258,7 @@ body.cursor-clicking .cursor-dot {
 }
 
 .sound-tile.is-active {
-  background: linear-gradient(135deg, rgba(108, 99, 255, 0.16), rgba(0, 212, 170, 0.08));
+  background: rgba(108, 99, 255, 0.16);
 }
 
 .sound-lock-pill {
