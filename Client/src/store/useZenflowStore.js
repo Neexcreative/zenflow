@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULT_BACKGROUND_ID } from '../data/backgrounds'
 
-function extractVideoId(url) {
+export function extractVideoId(url) {
   if (!url) return ''
   const re = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|embed)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
   const m = url.match(re)
@@ -11,11 +11,11 @@ function extractVideoId(url) {
 
 const DEFAULT_DURATIONS = { focus: 25, shortBreak: 5, longBreak: 15 }
 const DEFAULT_ROUNDS = 4
-const FREE_WIDGET_LIMIT = 3
-const DEFAULT_TASKS = [
-  { id: 'task-1', text: '', completed: false },
-  { id: 'task-2', text: '', completed: false },
-  { id: 'task-3', text: '', completed: false },
+
+export const POMODORO_MODES = [
+  { key: 'focus', label: 'Focus' },
+  { key: 'shortBreak', label: 'Short break' },
+  { key: 'longBreak', label: 'Long break' },
 ]
 
 function normalizeDuration(value, fallback) {
@@ -38,6 +38,12 @@ function createTask(text = '') {
   }
 }
 
+// After a focus session completes, every `rounds`-th break is a long one.
+export function getNextMode(mode, sessions, rounds) {
+  if (mode !== 'focus') return 'focus'
+  return sessions > 0 && sessions % rounds === 0 ? 'longBreak' : 'shortBreak'
+}
+
 const useZenflowStore = create(
   persist(
     (set, get) => ({
@@ -51,31 +57,23 @@ const useZenflowStore = create(
 
       backgroundTheme: 'default',
       selectedBackgroundId: DEFAULT_BACKGROUND_ID,
-      backgroundSwitcherOpen: false,
+      canvasDim: 0.35,
       setBackgroundTheme: (value) => set({ backgroundTheme: value }),
       setSelectedBackgroundId: (value) => set({ selectedBackgroundId: value }),
-      setBackgroundSwitcherOpen: (value) => set({ backgroundSwitcherOpen: value }),
+      setCanvasDim: (value) => set({ canvasDim: Math.min(0.85, Math.max(0, Number(value) || 0)) }),
 
-      activeWidgets: ['clock', 'pomodoro', 'vinyl', 'notes'],
-      toggleWidget: (id) => {
-        const { activeWidgets, userPlan } = get()
-        const isActive = activeWidgets.includes(id)
+      // One focus tool open at a time: 'tasks' | 'sounds' | 'notes' | 'background' | 'settings'
+      activeTool: null,
+      openTool: (id) => set({ activeTool: id }),
+      closeTool: () => set({ activeTool: null }),
+      toggleTool: (id) => set((state) => ({ activeTool: state.activeTool === id ? null : id })),
 
-        if (!isActive && userPlan === 'free' && activeWidgets.length >= FREE_WIDGET_LIMIT) {
-          set({ upgradeOpen: true })
-          return
-        }
-
-        set({
-          activeWidgets: isActive
-            ? activeWidgets.filter((widgetId) => widgetId !== id)
-            : [...activeWidgets, id],
-        })
-      },
-
+      // Timer. `pomodoroEndsAt` is the wall-clock deadline while running, so the
+      // countdown stays accurate in throttled background tabs and across reloads.
       pomodoroMode: 'focus',
       pomodoroTime: DEFAULT_DURATIONS.focus * 60,
       pomodoroRunning: false,
+      pomodoroEndsAt: null,
       pomodoroSessions: 0,
       pomodoroDurations: { ...DEFAULT_DURATIONS },
       pomodoroRounds: DEFAULT_ROUNDS,
@@ -85,39 +83,56 @@ const useZenflowStore = create(
           pomodoroMode: mode,
           pomodoroTime: pomodoroDurations[mode] * 60,
           pomodoroRunning: false,
+          pomodoroEndsAt: null,
         })
       },
-      setPomodoroRunning: (value) => set({ pomodoroRunning: value }),
-      tickPomodoro: () => {
-        const { pomodoroTime, pomodoroSessions, pomodoroMode } = get()
+      startPomodoro: () => {
+        const { pomodoroTime, pomodoroDurations, pomodoroMode } = get()
+        const seconds = pomodoroTime > 0 ? pomodoroTime : pomodoroDurations[pomodoroMode] * 60
+        set({
+          pomodoroTime: seconds,
+          pomodoroRunning: true,
+          pomodoroEndsAt: Date.now() + seconds * 1000,
+        })
+      },
+      pausePomodoro: () => {
+        get().syncPomodoro()
+        if (!get().pomodoroRunning) return
+        set({ pomodoroRunning: false, pomodoroEndsAt: null })
+      },
+      setPomodoroRunning: (value) => (value ? get().startPomodoro() : get().pausePomodoro()),
+      // Returns true when this sync completed the session.
+      syncPomodoro: () => {
+        const { pomodoroRunning, pomodoroEndsAt, pomodoroTime, pomodoroMode, pomodoroSessions } = get()
+        if (!pomodoroRunning || !pomodoroEndsAt) return false
 
-        if (pomodoroTime <= 1) {
+        const remaining = Math.max(0, Math.ceil((pomodoroEndsAt - Date.now()) / 1000))
+        if (remaining <= 0) {
           set({
             pomodoroRunning: false,
+            pomodoroEndsAt: null,
             pomodoroTime: 0,
             pomodoroSessions: pomodoroMode === 'focus' ? pomodoroSessions + 1 : pomodoroSessions,
           })
           return true
         }
 
-        set({ pomodoroTime: pomodoroTime - 1 })
+        if (remaining !== pomodoroTime) set({ pomodoroTime: remaining })
         return false
+      },
+      advancePomodoro: ({ autoStart = false } = {}) => {
+        const { pomodoroMode, pomodoroSessions, pomodoroRounds } = get()
+        get().setPomodoroMode(getNextMode(pomodoroMode, pomodoroSessions, pomodoroRounds))
+        if (autoStart) get().startPomodoro()
       },
       resetPomodoro: () => {
         const { pomodoroMode, pomodoroDurations } = get()
         set({
           pomodoroTime: pomodoroDurations[pomodoroMode] * 60,
           pomodoroRunning: false,
+          pomodoroEndsAt: null,
         })
       },
-      setPomodoroDurations: (durations) =>
-        set({
-          pomodoroDurations: {
-            focus: normalizeDuration(durations.focus, DEFAULT_DURATIONS.focus),
-            shortBreak: normalizeDuration(durations.shortBreak, DEFAULT_DURATIONS.shortBreak),
-            longBreak: normalizeDuration(durations.longBreak, DEFAULT_DURATIONS.longBreak),
-          },
-        }),
       applyCustomTimer: ({ focus, shortBreak, longBreak, rounds }) => {
         const normalizedDurations = {
           focus: normalizeDuration(focus, DEFAULT_DURATIONS.focus),
@@ -130,12 +145,14 @@ const useZenflowStore = create(
           pomodoroRounds: normalizeRounds(rounds),
           pomodoroTime: normalizedDurations[state.pomodoroMode] * 60,
           pomodoroRunning: false,
+          pomodoroEndsAt: null,
         }))
       },
 
       notes: '',
       setNotes: (value) => set({ notes: value }),
-      tasks: DEFAULT_TASKS,
+      clearNotes: () => set({ notes: '' }),
+      tasks: [],
       addTask: (text = '') =>
         set((state) => ({
           tasks: [...state.tasks, createTask(text)],
@@ -151,18 +168,13 @@ const useZenflowStore = create(
           ),
         })),
       removeTask: (id) =>
-        set((state) => {
-          const filtered = state.tasks.filter((task) => task.id !== id)
-          return {
-            tasks: filtered.length ? filtered : DEFAULT_TASKS,
-          }
-        }),
-      clearNotes: () => set({ notes: '' }),
-      productivityTab: 'notes',
-      notesTasksOpen: false,
-      setProductivityTab: (value) => set({ productivityTab: value }),
-      setNotesTasksOpen: (value) => set({ notesTasksOpen: value }),
-      openProductivityPanel: (tab) => set({ notesTasksOpen: true, productivityTab: tab }),
+        set((state) => ({
+          tasks: state.tasks.filter((task) => task.id !== id),
+        })),
+      clearCompletedTasks: () =>
+        set((state) => ({
+          tasks: state.tasks.filter((task) => !task.completed),
+        })),
 
       selectedSoundId: '',
       ambientPlaying: false,
@@ -187,26 +199,28 @@ const useZenflowStore = create(
         set((state) => ({
           musicFavorites: state.musicFavorites.filter((item) => item !== url),
         })),
-      soundsOpen: false,
-      setSoundsOpen: (value) => set({ soundsOpen: value }),
       isPremiumUser: false,
       setIsPremiumUser: (value) => set({ isPremiumUser: value }),
 
-      accentColor: '#6C63FF',
+      accentColor: '#7567FF',
       clockFormat: '24h',
+      showClock: true,
+      showQuote: true,
+      showCompanion: false,
+      customCursor: false,
+      completionChime: true,
       setAccentColor: (value) => set({ accentColor: value }),
       setClockFormat: (value) => set({ clockFormat: value }),
+      setShowClock: (value) => set({ showClock: value }),
+      setShowQuote: (value) => set({ showQuote: value }),
+      setShowCompanion: (value) => set({ showCompanion: value }),
+      setCustomCursor: (value) => set({ customCursor: value }),
+      setCompletionChime: (value) => set({ completionChime: value }),
 
-      settingsOpen: false,
       upgradeOpen: false,
-      customTimerOpen: false,
       loginOpen: false,
-      shareOpen: false,
-      setSettingsOpen: (value) => set({ settingsOpen: value }),
       setUpgradeOpen: (value) => set({ upgradeOpen: value }),
-      setCustomTimerOpen: (value) => set({ customTimerOpen: value }),
       setLoginOpen: (value) => set({ loginOpen: value }),
-      setShareOpen: (value) => set({ shareOpen: value }),
 
       coffeeMugPosition: { x: null, y: null },
       setCoffeeMugPosition: (value) => set({ coffeeMugPosition: value }),
@@ -224,15 +238,7 @@ const useZenflowStore = create(
       setIsFullscreen: (value) => set({ isFullscreen: value }),
 
       userPlan: 'free',
-      setUserPlan: (value) =>
-        set((state) => ({
-          userPlan: value,
-          isPremiumUser: value !== 'free',
-          activeWidgets:
-            value === 'free'
-              ? state.activeWidgets.slice(0, FREE_WIDGET_LIMIT)
-              : state.activeWidgets,
-        })),
+      setUserPlan: (value) => set({ userPlan: value, isPremiumUser: value !== 'free' }),
 
       clickSoundEnabled: true,
       toggleClickSound: () =>
@@ -240,12 +246,33 @@ const useZenflowStore = create(
     }),
     {
       name: 'zenflow-v3',
+      version: 1,
+      migrate: (persisted, version) => {
+        if (!persisted) return persisted
+        if (version < 1) {
+          // v0 seeded three blank task slots and stored a widget layout that no longer exists.
+          persisted.tasks = (persisted.tasks || []).filter((task) => task.text?.trim())
+          delete persisted.activeWidgets
+          if (persisted.accentColor === '#6C63FF') persisted.accentColor = '#7567FF'
+          persisted.pomodoroMode = 'focus'
+          persisted.pomodoroTime = (persisted.pomodoroDurations?.focus || DEFAULT_DURATIONS.focus) * 60
+        }
+        return persisted
+      },
       partialize: (state) => ({
         notes: state.notes,
         tasks: state.tasks,
-        activeWidgets: state.activeWidgets,
         accentColor: state.accentColor,
         clockFormat: state.clockFormat,
+        showClock: state.showClock,
+        showQuote: state.showQuote,
+        showCompanion: state.showCompanion,
+        customCursor: state.customCursor,
+        completionChime: state.completionChime,
+        pomodoroMode: state.pomodoroMode,
+        pomodoroTime: state.pomodoroTime,
+        pomodoroRunning: state.pomodoroRunning,
+        pomodoroEndsAt: state.pomodoroEndsAt,
         pomodoroDurations: state.pomodoroDurations,
         pomodoroSessions: state.pomodoroSessions,
         pomodoroRounds: state.pomodoroRounds,
@@ -257,6 +284,7 @@ const useZenflowStore = create(
         backgroundVisible: state.backgroundVisible,
         backgroundTheme: state.backgroundTheme,
         selectedBackgroundId: state.selectedBackgroundId,
+        canvasDim: state.canvasDim,
         selectedSoundId: state.selectedSoundId,
         ambientPlaying: state.ambientPlaying,
         ambientVolume: state.ambientVolume,

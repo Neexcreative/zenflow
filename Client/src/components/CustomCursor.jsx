@@ -12,7 +12,8 @@ export default function CustomCursor() {
   const ringPosRef = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 })
 
   useEffect(() => {
-    if (window.matchMedia('(pointer: coarse)').matches) return undefined
+    if (!window.matchMedia('(pointer: fine)').matches) return undefined
+    document.body.classList.add('has-custom-cursor')
 
     const onMove = (event) => {
       posRef.current = { x: event.clientX, y: event.clientY }
@@ -45,7 +46,7 @@ export default function CustomCursor() {
     document.addEventListener('mouseup', onUp)
 
     return () => {
-      document.body.classList.remove('cursor-hovering', 'cursor-clicking')
+      document.body.classList.remove('has-custom-cursor', 'cursor-hovering', 'cursor-clicking')
       document.removeEventListener('mousemove', onMove)
       document.removeEventListener('mousedown', onDown)
       document.removeEventListener('mouseup', onUp)

@@ -1,16 +1,31 @@
+// A scene is the atmosphere behind the Focus Canvas.
+//
+// - `type: 'gradient'` scenes are pure CSS (see `.scene-layer[data-scene=…]` in index.css)
+//   and need no assets.
+// - `type: 'image' | 'video'` scenes load `assetUrl`; until the file exists they render
+//   their `fallbackTheme` gradient instead.
+// - `fallbackTheme` doubles as the scene's gradient key and is mirrored into the store's
+//   `backgroundTheme` so older persisted state keeps working.
+//
 // Later, `assetUrl` and `thumbnail` can point to Supabase Storage or CDN URLs
 // instead of local files in `/public/backgrounds`.
-export const BACKGROUND_FILTERS = ['All', 'Lofi', 'Rainy', 'Café', 'Nature', 'Night', 'Study']
-
 export const DEFAULT_BACKGROUND_ID = 'default-gradient'
+
+export const BACKGROUND_CATEGORIES = [
+  { id: 'gradients', label: 'Gradients' },
+  { id: 'animated', label: 'Animated' },
+  { id: 'nature', label: 'Nature' },
+  { id: 'interior', label: 'Interior' },
+  { id: 'abstract', label: 'Abstract' },
+]
 
 export const BACKGROUND_GALLERY = [
   {
     id: 'default-gradient',
-    title: 'Default Gradient',
-    category: 'study',
+    title: 'Midnight',
+    category: 'gradients',
     mood: 'calm',
-    type: 'image',
+    type: 'gradient',
     thumbnail: '',
     assetUrl: '',
     premium: false,
@@ -18,9 +33,81 @@ export const BACKGROUND_GALLERY = [
     fallbackTheme: 'default',
   },
   {
+    id: 'deep-focus-gradient',
+    title: 'Deep Focus',
+    category: 'gradients',
+    mood: 'focused',
+    type: 'gradient',
+    thumbnail: '',
+    assetUrl: '',
+    premium: false,
+    tags: ['blue', 'focus'],
+    fallbackTheme: 'deep-focus',
+  },
+  {
+    id: 'dusk-gradient',
+    title: 'Dusk',
+    category: 'gradients',
+    mood: 'warm',
+    type: 'gradient',
+    thumbnail: '',
+    assetUrl: '',
+    premium: false,
+    tags: ['warm', 'evening'],
+    fallbackTheme: 'sunset-flow',
+  },
+  {
+    id: 'rain-night-gradient',
+    title: 'Rain Night',
+    category: 'gradients',
+    mood: 'quiet',
+    type: 'gradient',
+    thumbnail: '',
+    assetUrl: '',
+    premium: false,
+    tags: ['rain', 'night'],
+    fallbackTheme: 'rainy-night',
+  },
+  {
+    id: 'graphite-gradient',
+    title: 'Graphite',
+    category: 'gradients',
+    mood: 'minimal',
+    type: 'gradient',
+    thumbnail: '',
+    assetUrl: '',
+    premium: false,
+    tags: ['minimal', 'dark'],
+    fallbackTheme: 'minimal-dark',
+  },
+  {
+    id: 'aurora-drift',
+    title: 'Aurora',
+    category: 'animated',
+    mood: 'drifting',
+    type: 'gradient',
+    thumbnail: '',
+    assetUrl: '',
+    premium: false,
+    tags: ['animated', 'aurora', 'night'],
+    fallbackTheme: 'aurora',
+  },
+  {
+    id: 'tide-drift',
+    title: 'Tide',
+    category: 'animated',
+    mood: 'slow',
+    type: 'gradient',
+    thumbnail: '',
+    assetUrl: '',
+    premium: true,
+    tags: ['animated', 'ocean', 'calm'],
+    fallbackTheme: 'tide',
+  },
+  {
     id: 'lofi-night-room',
     title: 'Lofi Night Room',
-    category: 'lofi',
+    category: 'interior',
     mood: 'calm',
     type: 'image',
     thumbnail: '/backgrounds/thumbs/lofi-night-room-thumb.webp',
@@ -32,7 +119,7 @@ export const BACKGROUND_GALLERY = [
   {
     id: 'rainy-window-desk',
     title: 'Rainy Window Desk',
-    category: 'rainy',
+    category: 'interior',
     mood: 'calm',
     type: 'image',
     thumbnail: '/backgrounds/thumbs/rainy-window-desk-thumb.webp',
@@ -44,7 +131,7 @@ export const BACKGROUND_GALLERY = [
   {
     id: 'cafe-corner',
     title: 'Cafe Corner',
-    category: 'café',
+    category: 'interior',
     mood: 'warm',
     type: 'image',
     thumbnail: '/backgrounds/thumbs/cafe-corner-thumb.webp',
@@ -68,7 +155,7 @@ export const BACKGROUND_GALLERY = [
   {
     id: 'midnight-library',
     title: 'Midnight Library',
-    category: 'night',
+    category: 'interior',
     mood: 'quiet',
     type: 'image',
     thumbnail: '/backgrounds/thumbs/midnight-library-thumb.webp',
@@ -80,7 +167,7 @@ export const BACKGROUND_GALLERY = [
   {
     id: 'study-blueprint',
     title: 'Study Blueprint',
-    category: 'study',
+    category: 'abstract',
     mood: 'focused',
     type: 'image',
     thumbnail: '/backgrounds/thumbs/study-blueprint-thumb.webp',

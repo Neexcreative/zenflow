@@ -82,14 +82,12 @@ export default function CoffeeMugTimer() {
     <button
       type="button"
       className={`coffee-widget ${dragging ? 'is-dragging' : ''}`}
-      aria-label="Move coffee mug"
+      aria-label="Focus companion. Drag to move."
+      title="Drag to move"
       onPointerDown={onPointerDown}
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
     >
-      <div className="coffee-pixel-wrap">
-        <div className="coffee-widget-caption">
-          <span>Focus companion</span>
-        </div>
+      <div className="coffee-pixel-wrap" aria-hidden="true">
         <div className="coffee-mug">
           <div className="coffee-fill" style={{ height: `${fillHeight}%` }} />
           <div className="coffee-steam steam-one" />

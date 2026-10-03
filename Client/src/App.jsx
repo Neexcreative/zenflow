@@ -1,71 +1,83 @@
-import { useEffect } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
+import { AnimatePresence, MotionConfig } from 'framer-motion'
 import useZenflowStore from './store/useZenflowStore'
 import { useClickSound } from './hooks/useClickSound'
+import { useFocusTimer } from './hooks/useFocusTimer'
+import { useIdle } from './hooks/useIdle'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import AmbientAudioPlayer from './components/AmbientAudioPlayer'
-import Background from './components/Background'
-import BackgroundSwitcherModal from './components/BackgroundSwitcherModal'
-import BottomNav from './components/BottomNav'
 import CoffeeMugTimer from './components/CoffeeMugTimer'
 import CustomCursor from './components/CustomCursor'
-import CustomTimerModal from './components/CustomTimerModal'
-import HeaderBar from './components/HeaderBar'
-import LoginModal from './components/LoginModal'
-import NotesTasksPanel from './components/NotesTasksPanel'
-import SettingsModal from './components/SettingsModal'
-import ShareModal from './components/ShareModal'
-import SoundToggle from './components/SoundToggle'
-import SoundsPanel from './components/SoundsPanel'
 import ToastMessage from './components/ToastMessage'
-import UpgradeModal from './components/UpgradeModal'
-import WidgetToolbar from './components/WidgetToolbar'
-import PomodoroWidget from './components/widgets/PomodoroWidget'
-import NotesWidget from './components/widgets/NotesWidget'
-import WeatherWidget from './components/widgets/WeatherWidget'
-import ClockWidget from './components/widgets/ClockWidget'
-import VinylWidget from './components/widgets/VinylWidget'
-import QuoteWidget from './components/widgets/QuoteWidget'
+import SceneBackground from './components/focus/SceneBackground'
+import FocusHeader from './components/focus/FocusHeader'
+import FocusTimer from './components/focus/FocusTimer'
+import FocusDock from './components/focus/FocusDock'
+import TasksPanel from './components/panels/TasksPanel'
+import NotesPanel from './components/panels/NotesPanel'
+import SoundsPanel from './components/panels/SoundsPanel'
+import BackgroundPanel from './components/panels/BackgroundPanel'
+import SettingsPanel from './components/panels/SettingsPanel'
+import AccountDialog from './components/dialogs/AccountDialog'
+import UpgradeDialog from './components/dialogs/UpgradeDialog'
 import { supabase } from './lib/supabaseClient'
 
-const WIDGET_MAP = {
-  pomodoro: PomodoroWidget,
-  notes: NotesWidget,
-  weather: WeatherWidget,
-  clock: ClockWidget,
-  vinyl: VinylWidget,
-  quote: QuoteWidget,
+const TOOL_PANELS = {
+  tasks: TasksPanel,
+  sounds: SoundsPanel,
+  notes: NotesPanel,
+  background: BackgroundPanel,
+  settings: SettingsPanel,
 }
 
-const widgetVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.98 },
-  visible: (index) => ({
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      delay: index * 0.08,
-      duration: 0.5,
-      ease: [0.4, 0, 0.2, 1],
-    },
-  }),
-}
+// Clicks on these never dismiss the open panel.
+const KEEP_OPEN_SELECTOR =
+  '[data-tool-panel], [data-dock], [data-dialog], button, a, input, textarea, select, label, iframe'
 
-const LEFT_COLUMN_WIDGETS = ['clock', 'weather']
-const RIGHT_COLUMN_WIDGETS = ['notes', 'vinyl', 'quote']
+function ToolLayer() {
+  const activeTool = useZenflowStore((state) => state.activeTool)
+  const closeTool = useZenflowStore((state) => state.closeTool)
+  const previousToolRef = useRef(null)
+
+  // Clicking empty canvas closes the panel; controls on the canvas stay usable.
+  useEffect(() => {
+    if (!activeTool) return undefined
+    const onPointerDown = (event) => {
+      if (event.target.closest?.(KEEP_OPEN_SELECTOR)) return
+      closeTool()
+    }
+    document.addEventListener('pointerdown', onPointerDown)
+    return () => document.removeEventListener('pointerdown', onPointerDown)
+  }, [activeTool, closeTool])
+
+  // Return focus to the dock button that opened the panel, if focus would otherwise be lost.
+  useEffect(() => {
+    const previous = previousToolRef.current
+    previousToolRef.current = activeTool
+    if (activeTool || !previous) return
+
+    // The panel is still mounted during its exit animation, so focus inside it counts as lost.
+    const active = document.activeElement
+    const focusLost = !active || active === document.body || active.closest('[data-tool-panel]')
+    if (focusLost) {
+      document.querySelector(`[data-tool-trigger="${previous}"]`)?.focus({ preventScroll: true })
+    }
+  }, [activeTool])
+
+  const Panel = activeTool ? TOOL_PANELS[activeTool] : null
+  return <AnimatePresence>{Panel ? <Panel key={activeTool} onClose={closeTool} /> : null}</AnimatePresence>
+}
 
 export default function App() {
   const {
-    activeWidgets,
-    settingsOpen,
     upgradeOpen,
-    customTimerOpen,
     loginOpen,
-    shareOpen,
-    notesTasksOpen,
-    soundsOpen,
-    backgroundSwitcherOpen,
+    activeTool,
     accentColor,
-    backgroundTheme,
+    pomodoroMode,
+    pomodoroRunning,
+    showCompanion,
+    customCursor,
     showToast,
     setAuthLoading,
     setAuthUser,
@@ -74,6 +86,10 @@ export default function App() {
   } = useZenflowStore()
 
   useClickSound()
+  useFocusTimer()
+  useKeyboardShortcuts()
+
+  const idle = useIdle(pomodoroRunning && !activeTool && !upgradeOpen && !loginOpen)
 
   useEffect(() => {
     document.documentElement.style.setProperty('--accent', accentColor)
@@ -176,128 +192,33 @@ export default function App() {
     }
   }, [setAuthLoading, setAuthUser, setUserPlan])
 
-  const activeSet = new Set(activeWidgets)
-  const leftWidgets = LEFT_COLUMN_WIDGETS.filter((id) => activeSet.has(id))
-  const rightWidgets = RIGHT_COLUMN_WIDGETS.filter((id) => activeSet.has(id))
-  const overflowWidgets = activeWidgets.filter(
-    (id) => id !== 'pomodoro' && !LEFT_COLUMN_WIDGETS.includes(id) && !RIGHT_COLUMN_WIDGETS.includes(id)
-  )
-  const rightStack = [...rightWidgets, ...overflowWidgets]
-  const hasHero = activeSet.has('pomodoro')
-
   return (
-    <div className="app-shell" data-background-theme={backgroundTheme}>
-      <Background />
-      <AmbientAudioPlayer />
-      <CustomCursor />
-      <WidgetToolbar />
-      <HeaderBar />
-      <CoffeeMugTimer />
+    <MotionConfig reducedMotion="user">
+      <div
+        className="focus-app"
+        data-mode={pomodoroMode}
+        data-running={pomodoroRunning}
+        data-idle={idle}
+        data-tool-open={Boolean(activeTool)}
+      >
+        <SceneBackground />
+        <AmbientAudioPlayer />
 
-      <main className={`layout-main ${notesTasksOpen || soundsOpen ? 'has-side-panel' : ''}`}>
-        <div className="dashboard-shell">
-          <section className="dashboard-overview">
-            <div className="dashboard-stack dashboard-stack-left">
-              <AnimatePresence mode="popLayout">
-                {leftWidgets.map((id, index) => {
-                  const Widget = WIDGET_MAP[id]
-                  if (!Widget) return null
+        <FocusHeader />
+        <main className="focus-stage">
+          <h1 className="visually-hidden">Zenflow focus timer</h1>
+          <FocusTimer />
+        </main>
+        <FocusDock />
 
-                  return (
-                    <motion.div
-                      key={id}
-                      layout
-                      variants={widgetVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
-                      custom={index}
-                    >
-                      <Widget />
-                    </motion.div>
-                  )
-                })}
-              </AnimatePresence>
-            </div>
-          </section>
+        <ToolLayer />
+        {showCompanion ? <CoffeeMugTimer /> : null}
+        <ToastMessage />
 
-          <section className="dashboard-hero">
-            <div className="dashboard-hero-card">
-              <AnimatePresence mode="popLayout">
-                {hasHero ? (
-                  <motion.div
-                    key="pomodoro"
-                    layout
-                    variants={widgetVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
-                    custom={0}
-                  >
-                    <PomodoroWidget />
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="pomodoro-empty"
-                    className="dashboard-empty-state"
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 16 }}
-                  >
-                    <span className="eyebrow-label">Timer hidden</span>
-                    <h3>Bring the Pomodoro timer back into view</h3>
-                    <p>Use the sidebar to make the focus timer your dashboard hero again.</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </section>
-
-          <section className="dashboard-side">
-            <div className="dashboard-stack dashboard-stack-right">
-              <AnimatePresence mode="popLayout">
-                {rightStack.map((id, index) => {
-                  const Widget = WIDGET_MAP[id]
-                  if (!Widget) return null
-
-                  return (
-                    <motion.div
-                      key={id}
-                      layout
-                      variants={widgetVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.2 } }}
-                      custom={index}
-                    >
-                      <Widget />
-                    </motion.div>
-                  )
-                })}
-              </AnimatePresence>
-            </div>
-          </section>
-        </div>
-
-        <div className="layout-side-panels">
-          <AnimatePresence>{notesTasksOpen && <NotesTasksPanel key="notes-tasks-panel" />}</AnimatePresence>
-          <AnimatePresence>{soundsOpen && <SoundsPanel key="sounds-panel" />}</AnimatePresence>
-        </div>
-      </main>
-
-      <BottomNav />
-      <ToastMessage />
-
-      <AnimatePresence>{settingsOpen && <SettingsModal key="settings" />}</AnimatePresence>
-      <AnimatePresence>{upgradeOpen && <UpgradeModal key="upgrade" />}</AnimatePresence>
-      <AnimatePresence>{customTimerOpen && <CustomTimerModal key="custom-timer" />}</AnimatePresence>
-      <AnimatePresence>{loginOpen && <LoginModal key="login" />}</AnimatePresence>
-      <AnimatePresence>{shareOpen && <ShareModal key="share" />}</AnimatePresence>
-      <AnimatePresence>
-        {backgroundSwitcherOpen && <BackgroundSwitcherModal key="background-switcher" />}
-      </AnimatePresence>
-
-      <SoundToggle />
-    </div>
+        <AnimatePresence>{upgradeOpen ? <UpgradeDialog key="upgrade" /> : null}</AnimatePresence>
+        <AnimatePresence>{loginOpen ? <AccountDialog key="account" /> : null}</AnimatePresence>
+      </div>
+      {customCursor ? <CustomCursor /> : null}
+    </MotionConfig>
   )
 }

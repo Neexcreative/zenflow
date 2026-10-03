@@ -1,9 +1,4 @@
-import { useState } from 'react'
-import { AnimatePresence, motion } from 'framer-motion'
-import { RefreshCw } from 'lucide-react'
-import WidgetCard from '../WidgetCard'
-
-const QUOTES = [
+export const QUOTES = [
   { text: 'The secret of getting ahead is getting started.', author: 'Mark Twain' },
   { text: 'Focus is the art of knowing what to ignore.', author: 'James Clear' },
   { text: 'Deep work is the superpower of the 21st century.', author: 'Cal Newport' },
@@ -35,40 +30,3 @@ const QUOTES = [
   { text: 'The most productive room is often the quietest one.', author: 'Unknown' },
   { text: 'Progress loves a system it can trust.', author: 'Unknown' },
 ]
-
-export default function QuoteWidget() {
-  const [index, setIndex] = useState(() => Math.floor(Math.random() * QUOTES.length))
-  const [key, setKey] = useState(0)
-
-  const next = () => {
-    setIndex((current) => (current + 1) % QUOTES.length)
-    setKey((current) => current + 1)
-  }
-
-  return (
-    <WidgetCard
-      title="Quote"
-      headerRight={
-        <button onClick={next} className="icon-button quote-refresh" title="Next quote">
-          <RefreshCw size={14} />
-        </button>
-      }
-    >
-      <div className="quote-widget">
-        <div className="quote-mark">"</div>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={key}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.4 }}
-          >
-            <p className="quote-text">{QUOTES[index].text}</p>
-            <p className="quote-author">- {QUOTES[index].author}</p>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </WidgetCard>
-  )
-}
